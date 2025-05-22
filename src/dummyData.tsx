@@ -49,6 +49,8 @@ export const dummyPosts: Post[] = [
     parent_id: null,
     parent: null,
     replies: [],
+    shares: 10,
+    likes: 2000,
   },
   {
     id: '2',
@@ -60,6 +62,8 @@ export const dummyPosts: Post[] = [
     parent_id: null,
     parent: null,
     replies: [],
+    shares: 10,
+    likes: 2000,
   },
   {
     id: '3',
@@ -70,6 +74,8 @@ export const dummyPosts: Post[] = [
     parent_id: null,
     parent: null,
     replies: [],
+    shares: 10,
+    likes: 2000,
   },
   {
     id: '4',
@@ -80,6 +86,8 @@ export const dummyPosts: Post[] = [
     parent_id: null,
     parent: null,
     replies: [],
+    shares: 10,
+    likes: 2000,
   },
   {
     id: '5',
@@ -90,6 +98,8 @@ export const dummyPosts: Post[] = [
     parent_id: null,
     parent: null,
     replies: [],
+    shares: 10,
+    likes: 2000,
   },
   {
     id: '6',
@@ -100,6 +110,8 @@ export const dummyPosts: Post[] = [
     parent_id: '1',
     parent: null,
     replies: [],
+    shares: 10,
+    likes: 2000,
   },
   {
     id: '7',
@@ -110,6 +122,8 @@ export const dummyPosts: Post[] = [
     parent_id: '6',
     parent: null,
     replies: [],
+    shares: 10,
+    likes: 2000,
   },
   {
     id: '8',
@@ -120,6 +134,8 @@ export const dummyPosts: Post[] = [
     parent_id: '3',
     parent: null,
     replies: [],
+    shares: 10,
+    likes: 2000,
   },
   {
     id: '9',
@@ -130,6 +146,8 @@ export const dummyPosts: Post[] = [
     parent_id: '8',
     parent: null,
     replies: [],
+    shares: 10,
+    likes: 2000,
   },
   {
     id: '10',
@@ -140,6 +158,8 @@ export const dummyPosts: Post[] = [
     parent_id: '5',
     parent: null,
     replies: [],
+    shares: 10,
+    likes: 2000,
   },
   {
     id: '11',
@@ -150,6 +170,8 @@ export const dummyPosts: Post[] = [
     parent_id: '10',
     parent: null,
     replies: [],
+    shares: 10,
+    likes: 2000,
   },
   {
     id: '12',
@@ -160,6 +182,8 @@ export const dummyPosts: Post[] = [
     parent_id: '4',
     parent: null,
     replies: [],
+    shares: 10,
+    likes: 2000,
   },
   {
     id: '13',
@@ -170,6 +194,8 @@ export const dummyPosts: Post[] = [
     parent_id: '12',
     parent: null,
     replies: [],
+    shares: 10,
+    likes: 2000,
   },
   {
     id: '14',
@@ -180,6 +206,8 @@ export const dummyPosts: Post[] = [
     parent_id: '2',
     parent: null,
     replies: [],
+    shares: 10,
+    likes: 2000,
   },
   {
     id: '15',
@@ -190,5 +218,7 @@ export const dummyPosts: Post[] = [
     parent_id: '14',
     parent: null,
     replies: [],
+    shares: 10,
+    likes: 2000,
   },
 ];

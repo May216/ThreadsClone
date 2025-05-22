@@ -4,7 +4,12 @@ module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   presets: [require("nativewind/preset")],
   theme: {
-    extend: {},
+    extend: {
+      fontSize: {
+        base: '15px',
+        sm: '13px',
+      },
+    },
   },
   plugins: [],
 }

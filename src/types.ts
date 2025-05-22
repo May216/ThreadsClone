@@ -18,4 +18,6 @@ export type Post = {
   parent: Post | null;
 
   replies: Post[];
+  shares: number;
+  likes: number;
 };
