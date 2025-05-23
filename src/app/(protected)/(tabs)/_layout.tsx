@@ -1,5 +1,4 @@
 import { router, Tabs } from "expo-router"
-import { Feather } from "@expo/vector-icons"
 import { CustomTabBar } from '@/components';
 
 export default function TabsLayout() {
@@ -8,32 +7,10 @@ export default function TabsLayout() {
       screenOptions={{ tabBarShowLabel: false }}
       tabBar={props => <CustomTabBar {...props} />}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color, size }) => (
-            <Feather name="home" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="search"
-        options={{
-          title: "Search",
-          tabBarIcon: ({ color, size }) => (
-            <Feather name="search" color={color} size={size} />
-          ),
-        }}
-      />
+      <Tabs.Screen name="(home)" options={{ headerShown: false }} />
+      <Tabs.Screen name="search" />
       <Tabs.Screen
         name="plus"
-        options={{
-          title: 'Plus',
-          tabBarIcon: ({ color, size }) => (
-            <Feather name="plus" color={color} size={size} />
-          ),
-        }}
         listeners={{
           tabPress: (e) => {
             e.preventDefault();
@@ -41,24 +18,8 @@ export default function TabsLayout() {
           },
         }}
       />
-      <Tabs.Screen
-        name="notifications"
-        options={{
-          title: "Notifications",
-          tabBarIcon: ({ color, size }) => (
-            <Feather name="heart" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: "Profile",
-          tabBarIcon: ({ color, size }) => (
-            <Feather name="user" color={color} size={size} />
-          ),
-        }}
-      />
+      <Tabs.Screen name="notifications" />
+      <Tabs.Screen name="profile" />
     </Tabs>
   )
 }

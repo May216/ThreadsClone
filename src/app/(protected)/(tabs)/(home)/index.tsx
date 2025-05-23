@@ -30,7 +30,7 @@ export default function HomeScreen() {
   return (
     <FlatList
       data={posts}
-      renderItem={({ item }) => <PostListItem item={item} />}
+      renderItem={({ item }) => <PostListItem post={item} />}
     />
   );
 }

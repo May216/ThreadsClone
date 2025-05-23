@@ -1,20 +1,20 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 
 const ICONS = [
-  { name: 'home', route: 'index' },
+  { name: 'home', route: '(home)' },
   { name: 'search', route: 'search' },
   { name: 'plus', route: 'plus' },
   { name: 'heart', route: 'notifications' },
   { name: 'user', route: 'profile' },
 ];
 
-export const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
+export const CustomTabBar = ({ state, navigation }: BottomTabBarProps) => {
   return (
-    <View style={styles.tabBarContainer}>
-      <View style={styles.tabBar}>
+    <View className="rounded-t-[20px] mx-0 mb-0 pb-6">
+      <View className="flex-row justify-between items-center rounded-t-[20px] px-6 py-2">
         {ICONS.map((icon, idx) => {
           const isFocused = state.index === idx;
           const onPress = () => {
@@ -33,11 +33,11 @@ export const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarPro
                 key={icon.name}
                 accessibilityRole="button"
                 accessibilityState={isFocused ? { selected: true } : {}}
-                onPress={onPress}
-                style={styles.plusButton}
+                className="w-14 h-12 rounded-xl bg-[#1C1C1C] items-center justify-center mx-3"
                 activeOpacity={0.8}
+                onPress={onPress}
               >
-                <Feather name="plus" size={28} color="#fff" />
+                <Feather name="plus" size={28} color="white" />
               </TouchableOpacity>
             );
           }
@@ -46,9 +46,9 @@ export const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarPro
               key={icon.name}
               accessibilityRole="button"
               accessibilityState={isFocused ? { selected: true } : {}}
-              onPress={onPress}
-              style={styles.tabButton}
+              className="flex-1 items-center justify-center h-12"
               activeOpacity={0.7}
+              onPress={onPress}
             >
               <Feather
                 name={icon.name as any}
@@ -61,40 +61,4 @@ export const CustomTabBar = ({ state, descriptors, navigation }: BottomTabBarPro
       </View>
     </View>
   );
-}
-
-const styles = StyleSheet.create({
-  tabBarContainer: {
-    backgroundColor: '#111',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    marginHorizontal: 0,
-    marginBottom: 0,
-    paddingBottom: Platform.OS === 'ios' ? 24 : 12,
-  },
-  tabBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#111',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    paddingHorizontal: 24,
-    paddingVertical: 8,
-  },
-  tabButton: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 48,
-  },
-  plusButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: '#222',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: 12,
-  },
-}); 
+} 
