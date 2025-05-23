@@ -28,20 +28,20 @@ export const PostListItem = memo(({ item }: { item: Post }) => {
     <View
       className="flex-row p-4 border-b border-gray-800/70"
       accessibilityRole="none"
-      accessibilityLabel={`Post by ${item.user.name}`}
+      accessibilityLabel={`Post by ${item.user.username}`}
     >
       {/* avatar */}
       <Image
-        source={{ uri: item.user.image }}
+        source={{ uri: item.user.avatar_url }}
         className="w-12 h-12 rounded-full"
-        accessibilityLabel={`${item.user.name}'s profile picture`}
+        accessibilityLabel={`${item.user.username}'s profile picture`}
       />
 
       {/* content area */}
       <View className="flex-1 ml-3">
         {/* user info */}
         <View className="flex-row items-center gap-3">
-          <Text className="text-white font-bold text-base">{item.user.name}</Text>
+          <Text className="text-white font-bold text-base">{item.user.username}</Text>
           <Text className="text-gray-500">
             {dayjs(item.createdAt).fromNow()}
           </Text>
@@ -54,19 +54,19 @@ export const PostListItem = memo(({ item }: { item: Post }) => {
         <View className="flex-row mt-4 gap-6">
           <InteractionButton
             icon="heart-outline"
-            count={item.likes}
+            count={0}
             onPress={handleLike}
             accessibilityLabel="Like"
           />
           <InteractionButton
             icon="chatbubble-outline"
-            count={item.replies.length}
+            count={0}
             onPress={handleReply}
-            accessibilityLabel={`Reply to ${item.user.name}'s post`}
+            accessibilityLabel={`Reply to ${item.user.username}'s post`}
           />
           <InteractionButton
             icon="repeat-outline"
-            count={item.shares}
+            count={0}
             accessibilityLabel="Repost"
             onPress={handleRepost}
           />

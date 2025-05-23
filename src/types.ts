@@ -2,7 +2,7 @@ export type User = {
   id: string;
   username: string;
   name: string;
-  image: string;
+  avatar_url: string;
   bio: string;
 };
 
@@ -18,6 +18,4 @@ export type Post = {
   parent: Post | null;
 
   replies: Post[];
-  shares: number;
-  likes: number;
 };
