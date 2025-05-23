@@ -1,34 +1,40 @@
 import { useState } from "react";
-import { View, Text, TextInput, Pressable, KeyboardAvoidingView, Platform } from "react-native";
+import { View, Text, TextInput, Pressable, KeyboardAvoidingView, Platform, ActivityIndicator, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { router } from "expo-router";
+
 import { useAuth } from "@/providers/AuthProvider";
 import { supabase } from "@/lib/supabase";
 
+const createPost = async (content: string, user_id: string) => {
+  const { data } = await supabase
+    .from('posts')
+    .insert({ user_id, content })
+    .select()
+    .throwOnError();
+
+  return data;
+}
+
 export default function NewPostScreen() {
+  const queryClient = useQueryClient();
   const [text, setText] = useState('');
   const { user } = useAuth();
 
-  const onSubmit = async () => {
-    if (!text || !user) return;
-
-    try {
-      const { data, error } = await supabase.from('posts').insert({
-        user_id: user?.id,
-        content: text,
-      });
-
-      if (error) {
-        console.error(error);
-        return;
-      }
-
+  const { mutate, isPending, error } = useMutation({
+    mutationFn: () => createPost(text, user!.id),
+    onSuccess: () => {
       setText('');
-    } catch (error) {
+      router.back();
+      return queryClient.invalidateQueries({ queryKey: ['posts'] });
+    },
+    onError: (error) => {
       console.error(error);
     }
-  }
+  })
 
-  return ( 
+  return (
     <SafeAreaView className="p-4 flex-1" edges={['bottom']}>
       <KeyboardAvoidingView
         className="flex-1"
@@ -46,10 +52,19 @@ export default function NewPostScreen() {
           value={text}
           onChangeText={setText}
         />
+        {error && (
+          <View className="mt-4">
+            <Text className="text-red-500">{error.message}</Text>
+          </View>
+        )}
 
         <View className="mt-auto">
-          <Pressable className="bg-white p-3 px-6 self-end rounded-full" onPress={onSubmit}>
-            <Text>Post</Text>
+          <Pressable
+            className={`p-3 px-6 self-end rounded-full ${isPending ? 'bg-white/50' : 'bg-white'}`}
+            disabled={isPending}
+            onPress={() => mutate()}
+          >
+            {isPending ? <ActivityIndicator /> : <Text>Post</Text>}
           </Pressable>
         </View>
       </KeyboardAvoidingView>
