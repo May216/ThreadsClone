@@ -1,5 +1,4 @@
 import { ActivityIndicator, FlatList, Text } from 'react-native';
-import { Link } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 
 import { PostListItem } from '@/components';
@@ -31,9 +30,6 @@ export default function HomeScreen() {
   return (
     <FlatList
       data={posts}
-      ListHeaderComponent={() => (
-        <Link href="/new" className="text-blue-500 p-4 text-center text-3xl">New Post</Link>
-      )}
       renderItem={({ item }) => <PostListItem item={item} />}
     />
   );

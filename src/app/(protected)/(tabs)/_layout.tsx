@@ -1,9 +1,13 @@
-import { Tabs } from "expo-router"
+import { router, Tabs } from "expo-router"
 import { Feather } from "@expo/vector-icons"
+import { CustomTabBar } from '@/components';
 
 export default function TabsLayout() {
   return (
-    <Tabs screenOptions={{ tabBarShowLabel: false }}>
+    <Tabs
+      screenOptions={{ tabBarShowLabel: false }}
+      tabBar={props => <CustomTabBar {...props} />}
+    >
       <Tabs.Screen
         name="index"
         options={{
@@ -20,6 +24,21 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, size }) => (
             <Feather name="search" color={color} size={size} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="plus"
+        options={{
+          title: 'Plus',
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="plus" color={color} size={size} />
+          ),
+        }}
+        listeners={{
+          tabPress: (e) => {
+            e.preventDefault();
+            router.push('/new');
+          },
         }}
       />
       <Tabs.Screen
