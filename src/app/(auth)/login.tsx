@@ -1,6 +1,7 @@
-import { View, Text, TextInput, TouchableOpacity, Pressable } from 'react-native';
-import { Link } from 'expo-router';
 import { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Pressable, Alert } from 'react-native';
+import { Link } from 'expo-router';
+import { supabase } from '@/lib/supabase';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -8,17 +9,20 @@ export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
+    setIsLoading(true);
     if (!email || !password) {
-      // TODO: 添加錯誤提示
+      Alert.alert('請輸入電子郵件和密碼');
+      setIsLoading(false);
       return;
     }
-
     try {
-      setIsLoading(true);
-      // TODO: 實現登錄邏輯
-      console.log('登錄信息:', { email, password });
-    } catch (error) {
+      const { data: { session }, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        Alert.alert(error.message);
+      }
+    } catch (error: any) {
       console.error('登錄失敗:', error);
+      Alert.alert('登錄失敗:', error.message);
     } finally {
       setIsLoading(false);
     }
@@ -60,7 +64,7 @@ export default function LoginScreen() {
             />
           </View>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             className="w-full py-3 rounded-lg bg-white"
             onPress={handleLogin}
             disabled={isLoading}
