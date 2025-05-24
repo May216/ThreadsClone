@@ -15,7 +15,7 @@ export const PostReplyInput = ({ postId }: { postId: string | undefined }) => {
     mutationFn: () => createPost({ content: text, user_id: user!.id, parent_id: postId }),
     onSuccess: () => {
       setText('');
-      return queryClient.invalidateQueries({ queryKey: ['posts', postId, 'replies'] });
+      return queryClient.invalidateQueries({ queryKey: ['posts'] })
     },
     onError: (error) => {
       console.error(error);

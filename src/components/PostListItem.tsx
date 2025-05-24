@@ -5,11 +5,18 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
 import { InteractionButton } from "./InteractionButton";
-import { Post } from "@/types";
+import { Tables } from "@/types/database.types";
 
 dayjs.extend(relativeTime);
 
-export const PostListItem = memo(({ post }: { post: Post }) => {
+type PostWithUser = Tables<'posts'> & {
+  user: Tables<'profiles'>;
+  replies: {
+    count: number;
+  }[];
+}
+
+export const PostListItem = memo(({ post }: { post: PostWithUser }) => {
   const handleReply = useCallback(() => {
     console.log('Reply to post:', post.id);
   }, [post.id]);
@@ -35,7 +42,7 @@ export const PostListItem = memo(({ post }: { post: Post }) => {
       >
         {/* avatar */}
         <Image
-          source={{ uri: post.user.avatar_url }}
+          source={{ uri: post.user.avatar_url || '' }}
           className="w-12 h-12 rounded-full"
           accessibilityLabel={`${post.user.username}'s profile picture`}
         />
@@ -63,7 +70,7 @@ export const PostListItem = memo(({ post }: { post: Post }) => {
             />
             <InteractionButton
               icon="chatbubble-outline"
-              count={0}
+              count={post.replies?.[0].count || 0}
               onPress={handleReply}
               accessibilityLabel={`Reply to ${post.user.username}'s post`}
             />
