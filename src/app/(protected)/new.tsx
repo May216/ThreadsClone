@@ -5,17 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 
 import { useAuth } from "@/providers/AuthProvider";
-import { supabase } from "@/lib/supabase";
-
-const createPost = async (content: string, user_id: string) => {
-  const { data } = await supabase
-    .from('posts')
-    .insert({ user_id, content })
-    .select()
-    .throwOnError();
-
-  return data;
-}
+import { createPost } from "@/services/postsService";
 
 export default function NewPostScreen() {
   const queryClient = useQueryClient();
@@ -23,7 +13,7 @@ export default function NewPostScreen() {
   const { user } = useAuth();
 
   const { mutate, isPending, error } = useMutation({
-    mutationFn: () => createPost(text, user!.id),
+    mutationFn: () => createPost({ content: text, user_id: user!.id }),
     onSuccess: () => {
       setText('');
       router.back();
