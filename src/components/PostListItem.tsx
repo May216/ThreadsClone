@@ -16,7 +16,7 @@ type PostWithUser = Tables<'posts'> & {
   }[];
 }
 
-export const PostListItem = memo(({ post }: { post: PostWithUser }) => {
+export const PostListItem = memo(({ post, isLastInGroup = true }: { post: PostWithUser, isLastInGroup?: boolean }) => {
   const handleReply = useCallback(() => {
     console.log('Reply to post:', post.id);
   }, [post.id]);
@@ -36,32 +36,37 @@ export const PostListItem = memo(({ post }: { post: PostWithUser }) => {
   return (
     <Link href={`posts/${post.id}`} asChild>
       <Pressable
-        className="flex-row p-4 border-b border-gray-800/70"
+        className={`flex-row p-4 ${isLastInGroup ? 'border-b border-gray-800/70' : ''}`}
         accessibilityRole="none"
         accessibilityLabel={`Post by ${post.user.username}`}
       >
         {/* avatar */}
-        <Image
-          source={{ uri: post.user.avatar_url || '' }}
-          className="w-12 h-12 rounded-full"
-          accessibilityLabel={`${post.user.username}'s profile picture`}
-        />
+        <View className='mr-3 items-center gap-2'>
+          <Image
+            source={{ uri: post.user.avatar_url || '' }}
+            className='w-12 h-12 rounded-full'
+            accessibilityLabel={`${post.user.username}'s profile picture`}
+          />
+          {!isLastInGroup && (
+            <View className="w-[3px] flex-1 rounded-full bg-neutral-700 translate-y-2" />
+          )}
+        </View>
 
         {/* content area */}
-        <View className="flex-1 ml-3">
+        <View className="flex-1">
           {/* user info */}
-          <View className="flex-row items-center gap-3">
-            <Text className="text-white font-bold text-base">{post.user.username}</Text>
+          <View className="flex-row items-center">
+            <Text className="text-white font-bold mr-2">{post.user.username}</Text>
             <Text className="text-gray-500">
               {dayjs(post.created_at).fromNow()}
             </Text>
           </View>
 
           {/* post content */}
-          <Text className="text-white mt-2 leading-6 text-base">{post.content}</Text>
+          <Text className="text-white mt-2 mb-3">{post.content}</Text>
 
           {/* interaction buttons */}
-          <View className="flex-row mt-4 gap-6">
+          <View className="flex-row gap-6 mt-2">
             <InteractionButton
               icon="heart-outline"
               count={0}
