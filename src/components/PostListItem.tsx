@@ -46,7 +46,7 @@ export const PostListItem = memo(({ post }: { post: Post }) => {
           <View className="flex-row items-center gap-3">
             <Text className="text-white font-bold text-base">{post.user.username}</Text>
             <Text className="text-gray-500">
-              {dayjs(post.createdAt).fromNow()}
+              {dayjs(post.created_at).fromNow()}
             </Text>
           </View>
 

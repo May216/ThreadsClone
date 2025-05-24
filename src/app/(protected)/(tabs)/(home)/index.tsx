@@ -17,6 +17,7 @@ export default function HomeScreen() {
   const { data: posts, isLoading, error } = useQuery({
     queryKey: ['posts'],
     queryFn: fetchPosts,
+    staleTime: 1000 * 60 * 5,
   })
 
   if (isLoading) {

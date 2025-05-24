@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { View, TextInput } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { createPost } from "@/services/postsService";
 import { useAuth } from "@/providers/AuthProvider";
 
 export const PostReplyInput = ({ postId }: { postId: string | undefined }) => {
+  const queryClient = useQueryClient();
   const { user } = useAuth();
   const [text, setText] = useState('')
 
@@ -14,6 +15,7 @@ export const PostReplyInput = ({ postId }: { postId: string | undefined }) => {
     mutationFn: () => createPost({ content: text, user_id: user!.id, parent_id: postId }),
     onSuccess: () => {
       setText('');
+      return queryClient.invalidateQueries({ queryKey: ['posts', postId, 'replies'] });
     },
     onError: (error) => {
       console.error(error);
