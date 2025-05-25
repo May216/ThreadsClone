@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, TextInput, Pressable, KeyboardAvoidingView, Platform, ActivityIndicator, Image, ScrollView } from "react-native";
+import { View, Text, TextInput, Pressable, KeyboardAvoidingView, Platform, ActivityIndicator, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
@@ -8,12 +8,12 @@ import { ImagePickerAsset, launchImageLibraryAsync } from 'expo-image-picker';
 
 import { useAuth } from "@/providers/AuthProvider";
 import { createPost } from "@/services/posts";
-import { ImagePreview, VideoPreview } from "@/components";
+import { ImagePreview, SupabaseImage, VideoPreview } from "@/components";
 import { supabase } from "@/lib/supabase";
 
 export default function NewPostScreen() {
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [text, setText] = useState('');
   const [medias, setMedias] = useState<ImagePickerAsset[]>([]);
 
@@ -77,49 +77,57 @@ export default function NewPostScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 140 : 0}
       >
-        <Text className="text-white text-2xl font-bold">username</Text>
-
-        {/* content */}
-        <TextInput
-          placeholder="有什麼新鮮事？"
-          placeholderTextColor="gray"
-          className="text-white text-lg"
-          multiline
-          numberOfLines={4}
-          value={text}
-          onChangeText={setText}
-        />
-        {error && (
-          <View className="mt-4">
-            <Text className="text-red-500">{error.message}</Text>
-          </View>
-        )}
-        {/* medias */}
-        <View>
-          {medias.length > 0 && (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-4">
-              <View className="flex-row items-center gap-2">
-                {medias.map((media, index) => media.type === 'image' ? (
-                  <ImagePreview
-                    key={index}
-                    uri={media.uri}
-                    onPress={() => setMedias(medias.filter((_, i) => i !== index))}
-                  />
-                ) : (
-                  <VideoPreview
-                    key={index}
-                    uri={media.uri}
-                    onPress={() => setMedias(medias.filter((_, i) => i !== index))}
-                  />
-                ))}
+        <View className="flex-row gap-4">
+          <SupabaseImage
+            bucket="avatars"
+            path={profile?.avatar_url!}
+            className="w-12 h-12 rounded-full"
+            transform={{ width: 48, height: 48 }}
+          />
+          <View>
+            <Text className="text-white text-xl font-bold">{profile?.username}</Text>
+            {/* content */}
+            <TextInput
+              placeholder="有什麼新鮮事？"
+              placeholderTextColor="gray"
+              className="text-white text-lg"
+              multiline
+              numberOfLines={4}
+              value={text}
+              onChangeText={setText}
+            />
+            {error && (
+              <View className="mt-4">
+                <Text className="text-red-500">{error.message}</Text>
               </View>
-            </ScrollView>
-          )}
-          <View className="flex-row items-center gap-2 mt-4">
-            <Entypo name="images" size={20} color="gray" onPress={pickImage} />
+            )}
+            {/* medias */}
+            <View>
+              {medias.length > 0 && (
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-4">
+                  <View className="flex-row items-center gap-2">
+                    {medias.map((media, index) => media.type === 'image' ? (
+                      <ImagePreview
+                        key={index}
+                        uri={media.uri}
+                        onPress={() => setMedias(medias.filter((_, i) => i !== index))}
+                      />
+                    ) : (
+                      <VideoPreview
+                        key={index}
+                        uri={media.uri}
+                        onPress={() => setMedias(medias.filter((_, i) => i !== index))}
+                      />
+                    ))}
+                  </View>
+                </ScrollView>
+              )}
+              <View className="flex-row items-center gap-2 mt-4">
+                <Entypo name="images" size={20} color="gray" onPress={pickImage} />
+              </View>
+            </View>
           </View>
         </View>
-
         {/* post button */}
         <View className="mt-auto">
           <Pressable
