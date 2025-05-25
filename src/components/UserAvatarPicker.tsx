@@ -57,6 +57,7 @@ export const UserAvatarPicker = ({ currentAvatar, onUpload }: { currentAvatar: s
         bucket="avatars"
         path={currentAvatar}
         className="w-24 h-24 rounded-full"
+        transform={{ width: 96, height: 96 }}
       />
     </Pressable>
   )

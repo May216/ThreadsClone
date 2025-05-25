@@ -50,6 +50,7 @@ export const PostDetails = memo(({ post }: { post: PostWithUser }) => {
             bucket="avatars"
             path={post.user.avatar_url!}
             className='w-12 h-12 rounded-full'
+            transform={{ width: 48, height: 48 }}
           />
           <Text className="text-white font-bold">
             {post.user.username}
@@ -69,7 +70,6 @@ export const PostDetails = memo(({ post }: { post: PostWithUser }) => {
           <ScrollView
             horizontal={true}
             showsHorizontalScrollIndicator={false}
-            contentContainerClassName="my-4"
           >
             <View className="flex-row gap-4" onStartShouldSetResponder={() => true}>
               {post.medias?.map((media) => {
@@ -86,6 +86,7 @@ export const PostDetails = memo(({ post }: { post: PostWithUser }) => {
                     bucket="media"
                     path={media}
                     className="w-64 h-80 rounded-lg"
+                    transform={{ width: 300, height: 300 }}
                   />
                 )
               })}

@@ -31,6 +31,7 @@ export const ProfileHeader = () => {
           bucket="avatars"
           path={profile?.avatar_url}
           className="w-16 h-16 rounded-full"
+          transform={{ width: 80, height: 80 }}
         />
       </View>
       <Text className="text-white text-lg leading-snug">

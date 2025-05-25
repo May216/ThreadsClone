@@ -49,6 +49,7 @@ export const PostListItem = memo(({ post, isLastInGroup = true }: { post: PostWi
             bucket="avatars"
             path={post.user.avatar_url!}
             className='w-12 h-12 rounded-full'
+            transform={{ width: 48, height: 48 }}
           />
           {!isLastInGroup && (
             <View className="w-[3px] flex-1 rounded-full bg-neutral-700 translate-y-2" />
@@ -73,7 +74,6 @@ export const PostListItem = memo(({ post, isLastInGroup = true }: { post: PostWi
             <ScrollView
               horizontal={true}
               showsHorizontalScrollIndicator={false}
-              contentContainerClassName="my-4"
             >
               <View className="flex-row gap-4" onStartShouldSetResponder={() => true}>
                 {post.medias?.map((media) => {
@@ -90,6 +90,7 @@ export const PostListItem = memo(({ post, isLastInGroup = true }: { post: PostWi
                       bucket="media"
                       path={media}
                       className="w-64 h-80 rounded-lg"
+                      transform={{ width: 300, height: 300 }}
                     />
                   )
                 })}
