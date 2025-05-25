@@ -1,11 +1,12 @@
 import { memo, useCallback } from "react";
-import { View, Text, Image, ScrollView, Pressable } from "react-native";
+import { View, Text, ScrollView, Pressable } from "react-native";
 import { Link } from "expo-router";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
 import { InteractionButton } from "./InteractionButton";
 import { Video } from "./Video";
+import { SupabaseImage } from "./SupabaseImage";
 import { Tables } from "@/types/database.types";
 import { supabase } from "@/lib/supabase";
 
@@ -44,10 +45,10 @@ export const PostListItem = memo(({ post, isLastInGroup = true }: { post: PostWi
       >
         {/* avatar */}
         <View className='mr-3 items-center gap-2'>
-          <Image
-            source={{ uri: post.user.avatar_url || '' }}
+          <SupabaseImage
+            bucket="avatars"
+            path={post.user.avatar_url!}
             className='w-12 h-12 rounded-full'
-            accessibilityLabel={`${post.user.username}'s profile picture`}
           />
           {!isLastInGroup && (
             <View className="w-[3px] flex-1 rounded-full bg-neutral-700 translate-y-2" />
@@ -84,9 +85,10 @@ export const PostListItem = memo(({ post, isLastInGroup = true }: { post: PostWi
                       className="w-64 h-80 rounded-lg"
                     />
                   ) : (
-                    <Image
+                    <SupabaseImage
                       key={media}
-                      source={{ uri }}
+                      bucket="media"
+                      path={media}
                       className="w-64 h-80 rounded-lg"
                     />
                   )

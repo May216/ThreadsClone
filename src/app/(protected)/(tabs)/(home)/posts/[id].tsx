@@ -47,7 +47,7 @@ export default function PostDetailsScreen() {
             {parent && <PostListItem post={parent} isLastInGroup={false} />}
             <PostDetails post={post} />
             <Text className='text-white text-lg font-bold p-4 border-b border-neutral-800'>
-              Replies
+              評論
             </Text>
           </React.Fragment>
         )}

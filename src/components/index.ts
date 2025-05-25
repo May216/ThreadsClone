@@ -6,3 +6,5 @@ export * from './ImagePreview';
 export * from './VideoPreview';
 export * from './Video';
 export * from './ProfileHeader';
+export * from './UserAvatarPicker';
+export * from './SupabaseImage';

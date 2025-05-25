@@ -81,7 +81,7 @@ export default function NewPostScreen() {
 
         {/* content */}
         <TextInput
-          placeholder="What's on your mind?"
+          placeholder="有什麼新鮮事？"
           placeholderTextColor="gray"
           className="text-white text-lg"
           multiline
@@ -127,7 +127,7 @@ export default function NewPostScreen() {
             disabled={isPending}
             onPress={() => mutate()}
           >
-            {isPending ? <ActivityIndicator /> : <Text>Post</Text>}
+            {isPending ? <ActivityIndicator /> : <Text>發佈</Text>}
           </Pressable>
         </View>
       </KeyboardAvoidingView>

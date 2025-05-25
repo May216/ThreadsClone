@@ -5,12 +5,14 @@ import { router } from "expo-router";
 
 import { getProfileById, updateProfile } from "@/services/profiles";
 import { useAuth } from "@/providers/AuthProvider";
+import { UserAvatarPicker } from "@/components";
 
 export default function ProfileEditScreen() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const [fullName, setFullName] = useState('');
   const [bio, setBio] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState('');
 
   const { data: profile } = useQuery({
     queryKey: ['profile', user?.id],
@@ -19,7 +21,7 @@ export default function ProfileEditScreen() {
   })
 
   const { mutate, isPending } = useMutation({
-    mutationFn: () => updateProfile(user?.id!, { full_name: fullName, bio }),
+    mutationFn: () => updateProfile(user?.id!, { full_name: fullName, bio, avatar_url: avatarUrl }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile', user?.id] })
       router.back()
@@ -30,12 +32,13 @@ export default function ProfileEditScreen() {
     if (profile) {
       setFullName(profile.full_name);
       setBio(profile.bio);
+      setAvatarUrl(profile.avatar_url);
     }
   }, [profile?.id])
 
   return (
     <View className="flex-1 p-4 gap-4">
-      <Text className="text-white text-2xl font-bold">編輯個人檔案</Text>
+      <UserAvatarPicker currentAvatar={avatarUrl} onUpload={setAvatarUrl} />
       <TextInput
         className="text-white border-2 border-neutral-700 rounded-md p-4"
         placeholder="全名"

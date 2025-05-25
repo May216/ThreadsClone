@@ -26,7 +26,7 @@ export default function ProfileScreen() {
         ListHeaderComponent={() => (
           <>
             <ProfileHeader />
-            <Text className="text-white text-lg font-bold mt-4 m-2">Threads</Text>
+            <Text className="text-white text-lg font-bold mt-4 m-2">串文</Text>
           </>
         )}
         renderItem={({ item }) => <PostListItem post={item} />}
