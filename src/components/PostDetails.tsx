@@ -68,24 +68,26 @@ export const PostDetails = memo(({ post }: { post: PostWithUser }) => {
           <ScrollView
             horizontal={true}
             showsHorizontalScrollIndicator={false}
-            contentContainerClassName="flex-1"
+            contentContainerClassName="my-4"
           >
-            {post.medias?.map((media) => {
-              const uri = supabase.storage.from('media').getPublicUrl(media).data.publicUrl;
-              return media.includes('.mp4') ? (
-                <Video
-                  key={media}
-                  uri={uri}
-                  className="aspect-square w-full rounded-lg"
-                />
-              ) : (
-                <Image
-                  key={media}
-                  source={{ uri }}
-                  className="aspect-square w-full rounded-lg"
-                />
-              )
-            })}
+            <View className="flex-row gap-4" onStartShouldSetResponder={() => true}>
+              {post.medias?.map((media) => {
+                const uri = supabase.storage.from('media').getPublicUrl(media).data.publicUrl;
+                return media.includes('.mp4') ? (
+                  <Video
+                    key={media}
+                    uri={uri}
+                    className="w-64 h-80 rounded-lg"
+                  />
+                ) : (
+                  <Image
+                    key={media}
+                    source={{ uri }}
+                    className="w-64 h-80 rounded-lg"
+                  />
+                )
+              })}
+            </View>
           </ScrollView>
         )}
         {/* interaction buttons */}
