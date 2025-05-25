@@ -3,7 +3,7 @@ import { View, TextInput } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { createPost } from "@/services/postsService";
+import { createPost } from "@/services/posts";
 import { useAuth } from "@/providers/AuthProvider";
 
 export const PostReplyInput = ({ postId }: { postId: string | undefined }) => {

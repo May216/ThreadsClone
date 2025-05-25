@@ -14,7 +14,7 @@ export default function ProtectedLayout() {
       <Stack.Screen
         name="new"
         options={{
-          title: 'New Thread',
+          title: '新串文',
           presentation: 'modal',
           animation: 'fade_from_bottom',
         }}

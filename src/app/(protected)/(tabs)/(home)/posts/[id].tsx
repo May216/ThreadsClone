@@ -4,7 +4,7 @@ import { useLocalSearchParams } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 
 import { PostListItem, PostReplyInput } from "@/components";
-import { getPostById, getPostReplies } from "@/services/postsService";
+import { getPostById, getPostReplies } from "@/services/posts";
 import { PostDetails } from "@/components/PostDetails";
 
 export default function PostDetailsScreen() {

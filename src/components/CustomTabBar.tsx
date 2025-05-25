@@ -8,7 +8,7 @@ const ICONS = [
   { name: 'search', route: 'search' },
   { name: 'plus', route: 'plus' },
   { name: 'heart', route: 'notifications' },
-  { name: 'user', route: 'profile' },
+  { name: 'user', route: '(profile)' },
 ];
 
 export const CustomTabBar = ({ state, navigation }: BottomTabBarProps) => {

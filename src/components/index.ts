@@ -5,3 +5,4 @@ export * from './PostReplyInput';
 export * from './ImagePreview';
 export * from './VideoPreview';
 export * from './Video';
+export * from './ProfileHeader';

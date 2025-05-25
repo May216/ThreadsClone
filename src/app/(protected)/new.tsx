@@ -7,7 +7,7 @@ import { Entypo } from "@expo/vector-icons";
 import { ImagePickerAsset, launchImageLibraryAsync } from 'expo-image-picker';
 
 import { useAuth } from "@/providers/AuthProvider";
-import { createPost } from "@/services/postsService";
+import { createPost } from "@/services/posts";
 import { ImagePreview, VideoPreview } from "@/components";
 import { supabase } from "@/lib/supabase";
 

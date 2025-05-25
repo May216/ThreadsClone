@@ -8,7 +8,7 @@ export default function TabsLayout() {
       tabBar={props => <CustomTabBar {...props} />}
     >
       <Tabs.Screen name="(home)" options={{ headerShown: false }} />
-      <Tabs.Screen name="search" />
+      <Tabs.Screen name="search" options={{ title: '搜尋' }} />
       <Tabs.Screen
         name="plus"
         listeners={{
@@ -18,8 +18,8 @@ export default function TabsLayout() {
           },
         }}
       />
-      <Tabs.Screen name="notifications" />
-      <Tabs.Screen name="profile" />
+      <Tabs.Screen name="notifications" options={{ title: '動態' }} />
+      <Tabs.Screen name="(profile)" options={{ headerShown: false }} />
     </Tabs>
   )
 }

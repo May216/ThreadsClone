@@ -2,7 +2,7 @@ import { ActivityIndicator, FlatList, Text } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 
 import { PostListItem } from '@/components';
-import { fetchPosts } from '@/services/postsService';
+import { fetchPosts } from '@/services/posts';
 
 export default function HomeScreen() {
   const { data: posts, isLoading, error } = useQuery({

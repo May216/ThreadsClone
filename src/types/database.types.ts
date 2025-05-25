@@ -84,6 +84,7 @@ export type Database = {
           updated_at: string | null
           username: string | null
           website: string | null
+          bio: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -92,6 +93,7 @@ export type Database = {
           updated_at?: string | null
           username?: string | null
           website?: string | null
+          bio?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -100,6 +102,7 @@ export type Database = {
           updated_at?: string | null
           username?: string | null
           website?: string | null
+          bio?: string | null
         }
         Relationships: []
       }
