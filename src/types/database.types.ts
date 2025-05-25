@@ -41,6 +41,7 @@ export type Database = {
           id: string
           parent_id: string | null
           user_id: string
+          medias: string[] | null
         }
         Insert: {
           content?: string | null
@@ -48,6 +49,7 @@ export type Database = {
           id?: string
           parent_id?: string | null
           user_id: string
+          medias?: string[] | null
         }
         Update: {
           content?: string | null
@@ -55,6 +57,7 @@ export type Database = {
           id?: string
           parent_id?: string | null
           user_id?: string
+          medias?: string[] | null
         }
         Relationships: [
           {

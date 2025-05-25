@@ -1,11 +1,13 @@
 import { memo, useCallback } from "react";
-import { View, Text, Image, Pressable } from "react-native";
+import { View, Text, Image, Pressable, ScrollView } from "react-native";
 import { Link } from "expo-router";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
 import { InteractionButton } from "./InteractionButton";
+import { Video } from "./Video";
 import { Tables } from "@/types/database.types";
+import { supabase } from "@/lib/supabase";
 
 dayjs.extend(relativeTime);
 
@@ -48,7 +50,7 @@ export const PostDetails = memo(({ post }: { post: PostWithUser }) => {
             className="w-12 h-12 rounded-full"
             accessibilityLabel={`${post.user.username}'s profile picture`}
           />
-          <Text className="text-white font-bold mr-2">
+          <Text className="text-white font-bold">
             {post.user.username}
           </Text>
           <Text className="text-gray-500">
@@ -61,6 +63,31 @@ export const PostDetails = memo(({ post }: { post: PostWithUser }) => {
             {post.content}
           </Text>
         </View>
+        {/* medias */}
+        {post.medias?.length && (
+          <ScrollView
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            contentContainerClassName="flex-1"
+          >
+            {post.medias?.map((media) => {
+              const uri = supabase.storage.from('media').getPublicUrl(media).data.publicUrl;
+              return media.includes('.mp4') ? (
+                <Video
+                  key={media}
+                  uri={uri}
+                  className="aspect-square w-full rounded-lg"
+                />
+              ) : (
+                <Image
+                  key={media}
+                  source={{ uri }}
+                  className="aspect-square w-full rounded-lg"
+                />
+              )
+            })}
+          </ScrollView>
+        )}
         {/* interaction buttons */}
         <View className="flex-row gap-6">
           <InteractionButton

@@ -1,11 +1,13 @@
 import { memo, useCallback } from "react";
-import { View, Text, Image, Pressable } from "react-native";
+import { View, Text, Image, ScrollView, Pressable } from "react-native";
 import { Link } from "expo-router";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
 import { InteractionButton } from "./InteractionButton";
+import { Video } from "./Video";
 import { Tables } from "@/types/database.types";
+import { supabase } from "@/lib/supabase";
 
 dayjs.extend(relativeTime);
 
@@ -64,6 +66,34 @@ export const PostListItem = memo(({ post, isLastInGroup = true }: { post: PostWi
 
           {/* post content */}
           <Text className="text-white mt-2 mb-3">{post.content}</Text>
+
+          {/* medias */}
+          {post.medias?.length && (
+            <ScrollView
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              contentContainerClassName="my-4"
+            >
+              <View className="flex-row gap-4" onStartShouldSetResponder={() => true}>
+                {post.medias?.map((media) => {
+                  const uri = supabase.storage.from('media').getPublicUrl(media).data.publicUrl;
+                  return media.includes('.mp4') ? (
+                    <Video
+                      key={media}
+                      uri={uri}
+                      className="w-64 h-80 rounded-lg"
+                    />
+                  ) : (
+                    <Image
+                      key={media}
+                      source={{ uri }}
+                      className="w-64 h-80 rounded-lg"
+                    />
+                  )
+                })}
+              </View>
+            </ScrollView>
+          )}
 
           {/* interaction buttons */}
           <View className="flex-row gap-6 mt-2">
