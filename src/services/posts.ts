@@ -38,6 +38,7 @@ export const getPostsByUserId = async (id: string) => {
     .from('posts')
     .select('*, user:profiles(*), replies:posts(count)')
     .eq('user_id', id)
+    .eq('post_type', 'post')
     .order('created_at', { ascending: false })
     .throwOnError();
 
@@ -49,6 +50,7 @@ export const getPostReplies = async (id: string) => {
     .from('posts')
     .select('*, user:profiles(*), replies:posts(count)')
     .eq('parent_id', id)
+    .eq('post_type', 'reply')
     .throwOnError();
 
   return data;

@@ -3,12 +3,15 @@ import { View, Text, Pressable, ScrollView } from "react-native";
 import { Link } from "expo-router";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { InteractionButton } from "./InteractionButton";
 import { Video } from "./Video";
 import { SupabaseImage } from "./SupabaseImage";
 import { Tables } from "@/types/database.types";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/providers/AuthProvider";
+import { toggleLike, getPostLikes, getUserLikeStatus } from "@/services/interactions";
 
 dayjs.extend(relativeTime);
 
@@ -20,16 +23,34 @@ type PostWithUser = Tables<'posts'> & {
 }
 
 export const PostDetails = memo(({ post }: { post: PostWithUser }) => {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  const { data: likes } = useQuery({
+    queryKey: ['likes', post.id],
+    queryFn: () => getPostLikes(post.id)
+  });
+
+  const { data: hasLiked } = useQuery({
+    queryKey: ['userLike', post.id, user?.id],
+    queryFn: () => getUserLikeStatus(post.id, user!.id),
+    enabled: !!user
+  });
+
+  const likeMutation = useMutation({
+    mutationFn: () => toggleLike(post.id, user!.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['likes', post.id] });
+      queryClient.invalidateQueries({ queryKey: ['userLike', post.id, user?.id] });
+    }
+  });
+
   const handleReply = useCallback(() => {
     console.log('Reply to post:', post.id);
   }, [post.id]);
 
   const handleRepost = useCallback(() => {
     console.log('Repost:', post.id);
-  }, [post.id]);
-
-  const handleLike = useCallback(() => {
-    console.log('Like post:', post.id);
   }, [post.id]);
 
   const handleShare = useCallback(() => {
@@ -96,27 +117,28 @@ export const PostDetails = memo(({ post }: { post: PostWithUser }) => {
         {/* interaction buttons */}
         <View className="flex-row gap-6">
           <InteractionButton
-            icon="heart-outline"
-            count={0}
-            accessibilityLabel="Like"
-            onPress={handleLike}
+            icon={hasLiked ? "heart" : "heart-outline"}
+            count={likes?.length || 0}
+            accessibilityLabel={hasLiked ? "取消點讚" : "點讚"}
+            color={hasLiked ? "#ff3b30" : undefined}
+            onPress={() => likeMutation.mutate()}
           />
           <InteractionButton
             icon="chatbubble-outline"
             count={post.replies?.[0].count || 0}
-            accessibilityLabel={`Reply to ${post.user.username}'s post`}
+            accessibilityLabel={`回覆 ${post.user.username} 的貼文`}
             onPress={handleReply}
           />
           <InteractionButton
             icon="repeat-outline"
             count={0}
-            accessibilityLabel="Repost"
+            accessibilityLabel="轉發"
             onPress={handleRepost}
           />
           <InteractionButton
             icon="paper-plane-outline"
-            accessibilityLabel="Share"
             onPress={handleShare}
+            accessibilityLabel="分享"
           />
         </View>
       </Pressable>

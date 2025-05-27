@@ -12,7 +12,12 @@ export const PostReplyInput = ({ postId }: { postId: string | undefined }) => {
   const [text, setText] = useState('')
 
   const { mutate, isPending } = useMutation({
-    mutationFn: () => createPost({ content: text, user_id: user!.id, parent_id: postId }),
+    mutationFn: () => createPost({
+      content: text,
+      user_id: user!.id,
+      parent_id: postId,
+      post_type: 'reply'
+    }),
     onSuccess: () => {
       setText('');
       return queryClient.invalidateQueries({ queryKey: ['posts'] })

@@ -23,7 +23,6 @@ export const UserAvatarPicker = ({ currentAvatar, onUpload }: { currentAvatar: s
         return
       }
       const image = result.assets[0]
-      console.log('Got image', image)
       if (!image.uri) {
         throw new Error('No image uri!')
       }

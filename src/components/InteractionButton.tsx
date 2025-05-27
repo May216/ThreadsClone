@@ -6,14 +6,16 @@ interface InteractionButtonProps {
   icon: keyof typeof Ionicons.glyphMap;
   count?: number;
   accessibilityLabel: string;
+  color?: string;
   onPress: () => void;
 }
 
 export const InteractionButton = memo(({ 
   icon, 
   count, 
+  accessibilityLabel,
+  color = "#d1d5db",
   onPress, 
-  accessibilityLabel 
 }: InteractionButtonProps) => (
   <Pressable 
     onPress={onPress}
@@ -21,7 +23,7 @@ export const InteractionButton = memo(({
     accessibilityRole="button"
     accessibilityLabel={accessibilityLabel}
   >
-    <Ionicons name={icon} size={20} color="#d1d5db" />
+    <Ionicons name={icon} size={20} color={color} />
     {!!count && count > 0 && (
       <Text className="text-gray-300 ml-2 text-sm">{count}</Text>
     )}
