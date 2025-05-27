@@ -42,10 +42,7 @@ export type Database = {
           parent_id: string | null
           user_id: string
           medias: string[] | null
-          post_type: 'post' | 'repost' | 'quote' | 'reply'
-          like_count: number
-          quote_count: number
-          repost_count: number
+          post_type: 'post' | 'quote' | 'reply'
         }
         Insert: {
           content?: string | null
@@ -54,10 +51,7 @@ export type Database = {
           parent_id?: string | null
           user_id: string
           medias?: string[] | null
-          post_type: 'post' | 'repost' | 'quote' | 'reply'
-          like_count?: number
-          quote_count?: number
-          repost_count?: number
+          post_type: 'post' | 'quote' | 'reply'
         }
         Update: {
           content?: string | null
@@ -66,10 +60,7 @@ export type Database = {
           parent_id?: string | null
           user_id?: string
           medias?: string[] | null
-          post_type: 'post' | 'repost' | 'quote' | 'reply'
-          like_count?: number
-          quote_count?: number
-          repost_count?: number
+          post_type: 'post' | 'quote' | 'reply'
         }
         Relationships: [
           {
@@ -147,6 +138,42 @@ export type Database = {
           },
           {
             foreignKeyName: "likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reposts: {
+        Row: {
+          id: string
+          post_id: string
+          user_id: string
+          created_at: string
+        }
+        Insert: {
+          id: string
+          post_id: string
+          user_id: string
+          created_at: string
+        }
+        Update: {
+          id: string
+          post_id: string
+          user_id: string
+          created_at: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reposts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reposts_post_id_fkey"
             columns: ["post_id"]
             isOneToOne: false
             referencedRelation: "posts"

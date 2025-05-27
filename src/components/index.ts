@@ -8,3 +8,4 @@ export * from './Video';
 export * from './ProfileHeader';
 export * from './UserAvatarPicker';
 export * from './SupabaseImage';
+export * from './QuotePost';

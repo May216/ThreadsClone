@@ -1,61 +1,104 @@
-import { memo, useCallback } from "react";
-import { View, Text, ScrollView, Pressable } from "react-native";
-import { Link } from "expo-router";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { memo, useCallback } from "react"
+import { View, Text, ScrollView, Pressable } from "react-native"
+import { Link, router } from "expo-router"
+import dayjs from "dayjs"
+import relativeTime from "dayjs/plugin/relativeTime"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useActionSheet } from '@expo/react-native-action-sheet'
 
-import { InteractionButton } from "./InteractionButton";
-import { Video } from "./Video";
-import { SupabaseImage } from "./SupabaseImage";
-import { Tables } from "@/types/database.types";
-import { supabase } from "@/lib/supabase";
-import { toggleLike, getPostLikes, getUserLikeStatus } from "@/services/interactions";
-import { useAuth } from "@/providers/AuthProvider";
+import { InteractionButton } from "./InteractionButton"
+import { Video } from "./Video"
+import { SupabaseImage } from "./SupabaseImage"
+import { supabase } from "@/lib/supabase"
+import { toggleLike, getPostLikes, getUserLikeStatus, getPostRepostsCount, getUserRepostsStatus, toggleRepost } from "@/services/interactions"
+import { useAuth } from "@/providers/AuthProvider"
+import { Tables } from "@/types/database.types"
 
-dayjs.extend(relativeTime);
+dayjs.extend(relativeTime)
 
 type PostWithUser = Tables<'posts'> & {
-  user: Tables<'profiles'>;
+  user: Tables<'profiles'>
   replies: {
-    count: number;
-  }[];
+    count: number
+  }[]
 }
 
 export const PostListItem = memo(({ post, isLastInGroup = true }: { post: PostWithUser, isLastInGroup?: boolean }) => {
-  const { user } = useAuth();
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
+  const { user } = useAuth()
+  const { showActionSheetWithOptions } = useActionSheet()
 
   const { data: likes } = useQuery({
     queryKey: ['likes', post.id],
     queryFn: () => getPostLikes(post.id)
-  });
+  })
 
   const { data: hasLiked } = useQuery({
     queryKey: ['userLike', post.id, user?.id],
     queryFn: () => getUserLikeStatus(post.id, user!.id),
     enabled: !!user
-  });
+  })
 
   const likeMutation = useMutation({
     mutationFn: () => toggleLike(post.id, user!.id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['likes', post.id] });
-      queryClient.invalidateQueries({ queryKey: ['userLike', post.id, user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['likes', post.id] })
+      queryClient.invalidateQueries({ queryKey: ['userLike', post.id, user?.id] })
     }
-  });
+  })
+
+  const { data: repostsCount } = useQuery({
+    queryKey: ['reposts', post.id],
+    queryFn: () => getPostRepostsCount(post.id)
+  })
+
+  const { data: hasReposted } = useQuery({
+    queryKey: ['userRepost', post.id, user?.id],
+    queryFn: () => getUserRepostsStatus(post.id, user!.id),
+    enabled: !!user
+  })
+
+  const repostMutation = useMutation({
+    mutationFn: () => toggleRepost(post.id, user!.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reposts', post.id] })
+      queryClient.invalidateQueries({ queryKey: ['userRepost', post.id, user?.id] })
+    }
+  })
+
+  const handleRepost = () => {
+    const options = hasReposted
+      ? ['移除', '引用', '取消']
+      : ['轉發', '引用', '取消']
+    const destructiveButtonIndex = hasReposted ? 0 : undefined
+    const cancelButtonIndex = 3
+
+    showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex,
+        destructiveButtonIndex,
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 0) {
+          repostMutation.mutate()
+        } else if (buttonIndex === 1) {
+          router.push({
+            pathname: '/(protected)/new',
+            params: { parent_id: post.id, post_type: 'quote' }
+          })
+        }
+      }
+    )
+  }
 
   const handleReply = useCallback(() => {
-    console.log('Reply to post:', post.id);
-  }, [post.id]);
-
-  const handleRepost = useCallback(() => {
-    console.log('Repost:', post.id);
-  }, [post.id]);
+    console.log('Reply to post:', post.id)
+  }, [post.id])
 
   const handleShare = useCallback(() => {
-    console.log('Share post:', post.id);
-  }, [post.id]);
+    console.log('Share post:', post.id)
+  }, [post.id])
 
   return (
     <Link href={`posts/${post.id}`} asChild>
@@ -98,7 +141,7 @@ export const PostListItem = memo(({ post, isLastInGroup = true }: { post: PostWi
             >
               <View className="flex-row gap-4" onStartShouldSetResponder={() => true}>
                 {post.medias?.map((media) => {
-                  const uri = supabase.storage.from('media').getPublicUrl(media).data.publicUrl;
+                  const uri = supabase.storage.from('media').getPublicUrl(media).data.publicUrl
                   return media.includes('.mp4') ? (
                     <Video
                       key={media}
@@ -135,9 +178,10 @@ export const PostListItem = memo(({ post, isLastInGroup = true }: { post: PostWi
               onPress={handleReply}
             />
             <InteractionButton
-              icon="repeat-outline"
-              count={0}
-              accessibilityLabel="轉發"
+              icon="repeat"
+              count={repostsCount || 0}
+              accessibilityLabel={hasReposted ? "取消轉發" : "轉發"}
+              color={hasReposted ? "#00A4E9" : undefined}
               onPress={handleRepost}
             />
             <InteractionButton
@@ -149,5 +193,5 @@ export const PostListItem = memo(({ post, isLastInGroup = true }: { post: PostWi
         </View>
       </Pressable>
     </Link>
-  );
-});
+  )
+})

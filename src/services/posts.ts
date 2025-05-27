@@ -22,6 +22,16 @@ export const createPost = async (newPost: PostInput) => {
   return data;
 }
 
+export const deletePost = async (postId: string) => {
+  const { data } = await supabase
+    .from('posts')
+    .delete()
+    .eq('id', postId)
+    .throwOnError();
+
+  return data;
+}
+
 export const getPostById = async (id: string) => {
   const { data } = await supabase
     .from('posts')
