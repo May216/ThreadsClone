@@ -65,3 +65,14 @@ export const getPostReplies = async (id: string) => {
 
   return data;
 }
+
+export const updatePost = async (postId: string, updates: Partial<PostInput>) => {
+  const { data } = await supabase
+    .from('posts')
+    .update(updates)
+    .eq('id', postId)
+    .select()
+    .throwOnError();
+
+  return data;
+}

@@ -1,8 +1,9 @@
-import { memo } from "react"
+import React, { memo } from "react"
 import { View, Text, Pressable } from "react-native"
 import { Link } from "expo-router"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
+import FeatherIcon from "@expo/vector-icons/Feather"
 
 import { InteractionButton } from "../common"
 import { SupabaseImage } from "../media"
@@ -28,7 +29,8 @@ export const PostDetails = memo(({ post }: { post: PostWithUser }) => {
     hasReposted,
     handleRepost,
     handleReply,
-    handleShare
+    handleShare,
+    handleMore
   } = usePostInteractions(post)
 
   return (
@@ -39,27 +41,32 @@ export const PostDetails = memo(({ post }: { post: PostWithUser }) => {
         accessibilityLabel={`Post by ${post.user.username}`}
       >
         {/* user info */}
-        <View className="flex-1 flex-row items-center gap-3">
+        <View className="flex-1 flex-row justify-between items-center">
           {/* avatar */}
-          <SupabaseImage
-            bucket="avatars"
-            path={post.user.avatar_url!}
-            className='w-12 h-12 rounded-full'
-            transform={{ width: 48, height: 48 }}
-          />
-          <Text className="text-white font-bold">
-            {post.user.username}
-          </Text>
-          <Text className="text-gray-500">
-            {dayjs(post.created_at).fromNow()}
-          </Text>
+          <View className="flex-row items-center gap-2">
+            <SupabaseImage
+              bucket="avatars"
+              path={post.user.avatar_url!}
+              className='w-12 h-12 rounded-full'
+              transform={{ width: 48, height: 48 }}
+            />
+            <Text className="text-white font-bold">
+              {post.user.username}
+            </Text>
+            <Text className="text-gray-500">
+              {dayjs(post.created_at).fromNow()}
+            </Text>
+          </View>
+          <FeatherIcon name="more-vertical" size={16} color="gray" onPress={handleMore} />
         </View>
         {/* post content */}
-        <View className="flex-1">
-          <Text className="text-white">
-            {post.content}
-          </Text>
-        </View>
+        {post.content && (
+          <View className="flex-1">
+            <Text className="text-white">
+              {post.content}
+            </Text>
+          </View>
+        )}
         {/* medias */}
         <PostMedia medias={post.medias} />
         {/* interaction buttons */}

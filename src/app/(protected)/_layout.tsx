@@ -12,9 +12,17 @@ export default function ProtectedLayout() {
     <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen
-        name="new"
+        name="newPost"
         options={{
           title: '新串文',
+          presentation: 'modal',
+          animation: 'fade_from_bottom',
+        }}
+      />
+      <Stack.Screen
+        name="updatePost"
+        options={{
+          title: '編輯串文',
           presentation: 'modal',
           animation: 'fade_from_bottom',
         }}

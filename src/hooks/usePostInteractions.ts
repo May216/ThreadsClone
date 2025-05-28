@@ -1,6 +1,9 @@
+import { Alert } from "react-native"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { router } from "expo-router"
+
+import { usePostActions } from "./usePostActions"
 import { useAuth } from "@/providers/AuthProvider"
 import { toggleLike, getPostLikes, getUserLikeStatus, getPostRepostsCount, getUserRepostsStatus, toggleRepost } from "@/services/interactions"
 import { Tables } from "@/types/database.types"
@@ -16,6 +19,7 @@ export const usePostInteractions = (post: PostWithUser) => {
   const queryClient = useQueryClient()
   const { user } = useAuth()
   const { showActionSheetWithOptions } = useActionSheet()
+  const { deletePost } = usePostActions(post)
 
   const postId = post.id
   const userId = user?.id
@@ -63,7 +67,7 @@ export const usePostInteractions = (post: PostWithUser) => {
       ? ['移除', '引用', '取消']
       : ['轉發', '引用', '取消']
     const destructiveButtonIndex = hasReposted ? 0 : undefined
-    const cancelButtonIndex = 3
+    const cancelButtonIndex = 2
 
     showActionSheetWithOptions(
       {
@@ -76,7 +80,7 @@ export const usePostInteractions = (post: PostWithUser) => {
           repostMutation.mutate()
         } else if (buttonIndex === 1) {
           router.push({
-            pathname: '/(protected)/new',
+            pathname: '/(protected)/newPost',
             params: { parent_id: postId, post_type: 'quote' }
           })
         }
@@ -92,6 +96,55 @@ export const usePostInteractions = (post: PostWithUser) => {
     console.log('Share post:', postId)
   }
 
+  const handleMore = () => {
+    if (user?.id === post.user.id) {
+      const options = ['編輯', '刪除', '取消']
+      const destructiveButtonIndex = 1
+      const cancelButtonIndex = 2
+
+      showActionSheetWithOptions(
+        {
+          options,
+          cancelButtonIndex,
+          destructiveButtonIndex,
+        },
+        (buttonIndex) => {
+          if (buttonIndex === 0) {
+            router.push({
+              pathname: '/(protected)/updatePost',
+              params: { post_id: post.id }
+            })
+          } else if (buttonIndex === 1) {
+            Alert.alert(
+              '確認刪除',
+              '確定要刪除這則貼文嗎？',
+              [
+                { text: '取消', style: 'cancel' },
+                { text: '確定', style: 'destructive', onPress: () => deletePost() }
+              ]
+            )
+          }
+        }
+      )
+    } else {
+      const options = ['檢舉', '取消']
+      const cancelButtonIndex = 1
+
+      showActionSheetWithOptions(
+        {
+          options,
+          cancelButtonIndex,
+        },
+        (buttonIndex) => {
+          if (buttonIndex === 0) {
+            // TODO: 實現檢舉功能
+            console.log('Report post:', post.id)
+          }
+        }
+      )
+    }
+  }
+
   return {
     likes,
     hasLiked,
@@ -100,6 +153,7 @@ export const usePostInteractions = (post: PostWithUser) => {
     hasReposted,
     handleRepost,
     handleReply,
-    handleShare
+    handleShare,
+    handleMore
   }
 } 

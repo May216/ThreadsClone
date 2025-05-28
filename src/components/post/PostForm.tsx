@@ -1,40 +1,73 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View, Text, TextInput, Pressable, KeyboardAvoidingView, Platform, ActivityIndicator, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
-import { useLocalSearchParams } from "expo-router";
 import { Entypo } from "@expo/vector-icons";
 
 import { useAuth } from "@/providers/AuthProvider";
 import { ImagePreview, QuotePost, SupabaseImage, VideoPreview } from "@/components";
 import { getPostById } from "@/services/posts";
-import { useMediaUpload, useCreatePost } from "@/hooks";
+import { useMediaUpload } from "@/hooks";
 
-export default function NewPostScreen() {
-  const params = useLocalSearchParams<{ parent_id: string, post_type: string }>();
-  const parentId = params.parent_id;
-  const postType = params.post_type;
+interface PostFormProps {
+  isEdit?: boolean;
+  initialContent?: string;
+  parentId?: string;
+  postType?: 'post' | 'quote';
+  postId?: string;
+  initialMedias?: string[];
+  isSubmitting: boolean;
+  error?: Error;
+  submitButtonText: string;
+  onSubmit: (content: string, mediaUrls?: string[]) => Promise<void>;
+}
 
+export const PostForm = ({
+  isEdit = false,
+  initialContent = '',
+  parentId,
+  postType,
+  initialMedias,
+  isSubmitting,
+  error,
+  submitButtonText,
+  onSubmit,
+}: PostFormProps) => {
   const { profile } = useAuth();
-  const [text, setText] = useState('');
-  
-  const { medias, pickMedia, removeMedia, uploadAllMedia } = useMediaUpload();
-  const { createPost, isCreating, error } = useCreatePost();
+  const [text, setText] = useState(initialContent);
+  const { medias, setMedias, pickMedia, removeMedia, uploadAllMedia, deleteRemovedMedias } = useMediaUpload();
+  const isDisabled = isSubmitting || (!text && medias.length === 0);
+
+  useEffect(() => {
+    if (initialMedias) {
+      const initialMediaAssets = initialMedias.map(filename => {
+        const url = `${process.env.EXPO_PUBLIC_SUPABASE_URL}/storage/v1/object/public/media/${filename}`;
+        return {
+          uri: url,
+          type: filename.match(/\.(jpg|jpeg|png|gif)$/i) ? 'image' as const : 'video' as const,
+          mimeType: filename.match(/\.(jpg|jpeg|png|gif)$/i) ? 'image/jpeg' : 'video/mp4',
+          width: 0,
+          height: 0,
+        };
+      });
+      setMedias(initialMediaAssets);
+    }
+  }, [initialMedias]);
 
   const { data: parentPost } = useQuery({
     queryKey: ['post', parentId],
-    queryFn: () => getPostById(parentId),
+    queryFn: () => getPostById(parentId!),
     enabled: !!parentId
   });
 
-  const handlePost = async () => {
-    const mediaUrls = await uploadAllMedia();
-    createPost({
-      content: text,
-      postType: postType as 'post' | 'quote',
-      parentId,
-      mediaUrls
-    });
+  const handleSubmit = async () => {
+    try {
+      await deleteRemovedMedias();
+      const mediaUrls = await uploadAllMedia();
+      await onSubmit(text, mediaUrls);
+    } catch (error) {
+      console.error('Error in handleSubmit:', error);
+    }
   };
 
   return (
@@ -60,7 +93,7 @@ export default function NewPostScreen() {
             <Text className="text-white text-xl font-bold">{profile?.username}</Text>
             {/* content */}
             <TextInput
-              placeholder="有什麼新鮮事？"
+              placeholder={isEdit ? '編輯內容' : '有什麼新鮮事？'}
               placeholderTextColor="gray"
               className="text-white text-lg"
               multiline
@@ -103,17 +136,17 @@ export default function NewPostScreen() {
             )}
           </View>
         </View>
-        {/* post button */}
+        {/* submit button */}
         <View className="mt-auto">
           <Pressable
-            className={`p-3 px-6 self-end rounded-full ${isCreating ? 'bg-white/50' : 'bg-white'}`}
-            disabled={isCreating}
-            onPress={handlePost}
+            className={`p-3 px-6 self-end rounded-full ${isDisabled ? 'bg-white/50' : 'bg-white'}`}
+            disabled={isDisabled}
+            onPress={handleSubmit}
           >
-            {isCreating ? <ActivityIndicator /> : <Text>發佈</Text>}
+            {isSubmitting ? <ActivityIndicator /> : <Text>{submitButtonText}</Text>}
           </Pressable>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
-}
+}; 

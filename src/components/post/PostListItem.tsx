@@ -3,6 +3,7 @@ import { View, Text, Pressable } from "react-native"
 import { Link } from "expo-router"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
+import FeatherIcon from "@expo/vector-icons/Feather"
 
 import { InteractionButton } from "../common"
 import { SupabaseImage } from "../media"
@@ -28,7 +29,8 @@ export const PostListItem = memo(({ post, isLastInGroup = true }: { post: PostWi
     hasReposted,
     handleRepost,
     handleReply,
-    handleShare
+    handleShare,
+    handleMore
   } = usePostInteractions(post)
 
   return (
@@ -52,23 +54,26 @@ export const PostListItem = memo(({ post, isLastInGroup = true }: { post: PostWi
         </View>
 
         {/* content area */}
-        <View className="flex-1">
+        <View className="flex-1 gap-2">
           {/* user info */}
-          <View className="flex-row items-center">
-            <Text className="text-white font-bold mr-2">{post.user.username}</Text>
-            <Text className="text-gray-500">
-              {dayjs(post.created_at).fromNow()}
-            </Text>
+          <View className="flex-row justify-between items-center">
+            <View className="flex-row items-center gap-2">
+              <Text className="text-white font-bold mr-2">{post.user.username}</Text>
+              <Text className="text-gray-500">
+                {dayjs(post.created_at).fromNow()}
+              </Text>
+            </View>
+            <FeatherIcon name="more-vertical" size={16} color="gray" onPress={handleMore} />
           </View>
 
           {/* post content */}
-          <Text className="text-white mt-2 mb-3">{post.content}</Text>
+          {post.content && <Text className="text-white">{post.content}</Text>}
 
           {/* medias */}
-          <PostMedia medias={post.medias} />
+          {post.medias && <PostMedia medias={post.medias} />}
 
           {/* interaction buttons */}
-          <View className="flex-row gap-6 mt-2">
+          <View className="flex-row gap-6">
             <InteractionButton
               icon={hasLiked ? "heart" : "heart-outline"}
               count={likes?.length}

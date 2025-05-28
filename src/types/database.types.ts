@@ -43,6 +43,7 @@ export type Database = {
           user_id: string
           medias: string[] | null
           post_type: 'post' | 'quote' | 'reply'
+          updated_at: string
         }
         Insert: {
           content?: string | null
@@ -52,6 +53,7 @@ export type Database = {
           user_id: string
           medias?: string[] | null
           post_type: 'post' | 'quote' | 'reply'
+          updated_at?: string
         }
         Update: {
           content?: string | null
@@ -60,7 +62,8 @@ export type Database = {
           parent_id?: string | null
           user_id?: string
           medias?: string[] | null
-          post_type: 'post' | 'quote' | 'reply'
+          post_type?: 'post' | 'quote' | 'reply'
+          updated_at?: string
         }
         Relationships: [
           {

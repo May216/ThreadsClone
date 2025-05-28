@@ -14,7 +14,7 @@ export default function TabsLayout() {
         listeners={{
           tabPress: (e) => {
             e.preventDefault();
-            router.push('/new');
+            router.push('/newPost');
           },
         }}
       />
