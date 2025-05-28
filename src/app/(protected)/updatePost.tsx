@@ -23,9 +23,9 @@ export default function EditPostScreen() {
   return (
     <PostForm
       isEdit={true}
-      initialContent={post?.content}
-      postType={post?.post_type}
+      parentId={post?.parent_id}
       postId={postId}
+      initialContent={post?.content}
       initialMedias={post?.medias}
       isSubmitting={isEditing}
       submitButtonText="更新"

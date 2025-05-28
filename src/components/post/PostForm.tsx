@@ -13,7 +13,6 @@ interface PostFormProps {
   isEdit?: boolean;
   initialContent?: string;
   parentId?: string;
-  postType?: 'post' | 'quote';
   postId?: string;
   initialMedias?: string[];
   isSubmitting: boolean;
@@ -24,9 +23,8 @@ interface PostFormProps {
 
 export const PostForm = ({
   isEdit = false,
-  initialContent = '',
   parentId,
-  postType,
+  initialContent = '',
   initialMedias,
   isSubmitting,
   error,
@@ -37,6 +35,12 @@ export const PostForm = ({
   const [text, setText] = useState(initialContent);
   const { medias, setMedias, pickMedia, removeMedia, uploadAllMedia, deleteRemovedMedias } = useMediaUpload();
   const isDisabled = isSubmitting || (!text && medias.length === 0);
+
+  useEffect(() => {
+    if (initialContent) {
+      setText(initialContent);
+    }
+  }, [initialContent]);
 
   useEffect(() => {
     if (initialMedias) {
@@ -85,7 +89,7 @@ export const PostForm = ({
               className="w-12 h-12 rounded-full"
               transform={{ width: 48, height: 48 }}
             />
-            {postType === 'quote' && (
+            {!!parentId && (
               <View className="w-[3px] flex-1 rounded-full bg-neutral-700 translate-y-2" />
             )}
           </View>
@@ -131,7 +135,7 @@ export const PostForm = ({
                 <Entypo name="images" size={20} color="gray" onPress={pickMedia} />
               </View>
             </View>
-            {postType === 'quote' && (
+            {!!parentId && (
               <QuotePost post={parentPost} />
             )}
           </View>

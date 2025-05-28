@@ -22,10 +22,9 @@ export default function NewPostScreen() {
     <PostForm
       isEdit={false}
       parentId={parentId}
-      postType={postType as 'post' | 'quote'}
-      onSubmit={handleSubmit}
       isSubmitting={isCreating}
       submitButtonText="發佈"
+      onSubmit={handleSubmit}
     />
   );
 }
