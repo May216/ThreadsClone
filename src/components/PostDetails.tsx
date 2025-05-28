@@ -1,61 +1,35 @@
-import { memo, useCallback } from "react";
-import { View, Text, Pressable, ScrollView } from "react-native";
-import { Link } from "expo-router";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { memo } from "react"
+import { View, Text, Pressable } from "react-native"
+import { Link } from "expo-router"
+import dayjs from "dayjs"
+import relativeTime from "dayjs/plugin/relativeTime"
 
-import { InteractionButton } from "./InteractionButton";
-import { Video } from "./Video";
-import { SupabaseImage } from "./SupabaseImage";
-import { Tables } from "@/types/database.types";
-import { supabase } from "@/lib/supabase";
-import { useAuth } from "@/providers/AuthProvider";
-import { toggleLike, getPostLikes, getUserLikeStatus } from "@/services/interactions";
+import { InteractionButton } from "./InteractionButton"
+import { SupabaseImage } from "./SupabaseImage"
+import { PostMedia } from "./PostMedia"
+import { usePostInteractions } from "@/hooks/usePostInteractions"
+import { Tables } from "@/types/database.types"
 
-dayjs.extend(relativeTime);
+dayjs.extend(relativeTime)
 
 type PostWithUser = Tables<'posts'> & {
-  user: Tables<'profiles'>;
+  user: Tables<'profiles'>
   replies: {
-    count: number;
-  }[];
+    count: number
+  }[]
 }
 
 export const PostDetails = memo(({ post }: { post: PostWithUser }) => {
-  const { user } = useAuth();
-  const queryClient = useQueryClient();
-
-  const { data: likes } = useQuery({
-    queryKey: ['likes', post.id],
-    queryFn: () => getPostLikes(post.id)
-  });
-
-  const { data: hasLiked } = useQuery({
-    queryKey: ['userLike', post.id, user?.id],
-    queryFn: () => getUserLikeStatus(post.id, user!.id),
-    enabled: !!user
-  });
-
-  const likeMutation = useMutation({
-    mutationFn: () => toggleLike(post.id, user!.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['likes', post.id] });
-      queryClient.invalidateQueries({ queryKey: ['userLike', post.id, user?.id] });
-    }
-  });
-
-  const handleReply = useCallback(() => {
-    console.log('Reply to post:', post.id);
-  }, [post.id]);
-
-  const handleRepost = useCallback(() => {
-    console.log('Repost:', post.id);
-  }, [post.id]);
-
-  const handleShare = useCallback(() => {
-    console.log('Share post:', post.id);
-  }, [post.id]);
+  const {
+    likes,
+    hasLiked,
+    likeMutation,
+    repostsCount,
+    hasReposted,
+    handleRepost,
+    handleReply,
+    handleShare
+  } = usePostInteractions(post)
 
   return (
     <Link href={`posts/${post.id}`} asChild>
@@ -87,52 +61,27 @@ export const PostDetails = memo(({ post }: { post: PostWithUser }) => {
           </Text>
         </View>
         {/* medias */}
-        {post.medias?.length && (
-          <ScrollView
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-          >
-            <View className="flex-row gap-4" onStartShouldSetResponder={() => true}>
-              {post.medias?.map((media) => {
-                const uri = supabase.storage.from('media').getPublicUrl(media).data.publicUrl;
-                return media.includes('.mp4') ? (
-                  <Video
-                    key={media}
-                    uri={uri}
-                    className="w-64 h-80 rounded-lg"
-                  />
-                ) : (
-                  <SupabaseImage
-                    key={media}
-                    bucket="media"
-                    path={media}
-                    className="w-64 h-80 rounded-lg"
-                    transform={{ width: 300, height: 300 }}
-                  />
-                )
-              })}
-            </View>
-          </ScrollView>
-        )}
+        <PostMedia medias={post.medias} />
         {/* interaction buttons */}
         <View className="flex-row gap-6">
           <InteractionButton
             icon={hasLiked ? "heart" : "heart-outline"}
-            count={likes?.length || 0}
+            count={likes?.length}
             accessibilityLabel={hasLiked ? "取消點讚" : "點讚"}
-            color={hasLiked ? "#ff3b30" : undefined}
+            color={hasLiked ? "#E5397F" : undefined}
             onPress={() => likeMutation.mutate()}
           />
           <InteractionButton
             icon="chatbubble-outline"
-            count={post.replies?.[0].count || 0}
+            count={post.replies?.[0]?.count}
             accessibilityLabel={`回覆 ${post.user.username} 的貼文`}
             onPress={handleReply}
           />
           <InteractionButton
-            icon="repeat-outline"
-            count={0}
-            accessibilityLabel="轉發"
+            icon="repeat"
+            count={repostsCount}
+            accessibilityLabel={hasReposted ? "取消轉發" : "轉發"}
+            color={hasReposted ? "#53B780" : undefined}
             onPress={handleRepost}
           />
           <InteractionButton
@@ -143,5 +92,5 @@ export const PostDetails = memo(({ post }: { post: PostWithUser }) => {
         </View>
       </Pressable>
     </Link>
-  );
-});
+  )
+})

@@ -24,8 +24,8 @@ export const InteractionButton = memo(({
     accessibilityLabel={accessibilityLabel}
   >
     <Ionicons name={icon} size={20} color={color} />
-    {!!count && count > 0 && (
-      <Text className="ml-2 text-sm" style={{ color }}>{count}</Text>
-    )}
+    <Text className="ml-2 text-sm w-6" style={{ color }}>
+      {count && count > 0 ? count : ''}
+    </Text>
   </Pressable>
 ));

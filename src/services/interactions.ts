@@ -12,8 +12,7 @@ export const toggleLike = async (postId: string, userId: string) => {
     const { data } = await supabase
       .from('likes')
       .delete()
-      .eq('post_id', postId)
-      .eq('user_id', userId)
+      .eq('id', existingLike.id)
       .throwOnError()
     return { action: 'unlike', data }
   } else {
@@ -48,7 +47,8 @@ export const toggleRepost = async (postId: string, userId: string) => {
   const { data: existingRepost } = await supabase
     .from('reposts')
     .select('id')
-    .or(`id.eq.${postId},user_id.eq.${userId}`)
+    .eq('post_id', postId)
+    .eq('user_id', userId)
     .single()
 
   if (existingRepost) {
