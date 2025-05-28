@@ -1,6 +1,5 @@
 import { ScrollView, View } from "react-native"
-import { Video } from "./Video"
-import { SupabaseImage } from "./SupabaseImage"
+import { Video, SupabaseImage } from "../media"
 import { supabase } from "@/lib/supabase"
 
 type PostMediaProps = {

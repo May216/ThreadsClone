@@ -3,8 +3,7 @@ import { View, Text, ScrollView, ActivityIndicator } from "react-native"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 
-import { Video } from "./Video"
-import { SupabaseImage } from "./SupabaseImage"
+import { Video, SupabaseImage } from "../media"
 import { supabase } from "@/lib/supabase"
 import { Tables } from "@/types/database.types"
 

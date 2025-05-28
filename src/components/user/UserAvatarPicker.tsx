@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Alert, Pressable } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 
-import { SupabaseImage } from "./SupabaseImage";
+import { SupabaseImage } from "../media"
 import { supabase } from "@/lib/supabase";
 
 export const UserAvatarPicker = ({ currentAvatar, onUpload }: { currentAvatar: string, onUpload: (avatarUrl: string) => void }) => {

@@ -2,7 +2,7 @@ import { View, Text, ActivityIndicator, Pressable } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "expo-router";
 
-import { SupabaseImage } from "./SupabaseImage";
+import { SupabaseImage } from "../media"
 import { getProfileById } from "@/services/profiles"
 import { useAuth } from "@/providers/AuthProvider";
 
