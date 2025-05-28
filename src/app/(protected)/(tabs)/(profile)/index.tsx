@@ -1,3 +1,4 @@
+import React from "react"
 import { View, Text, ActivityIndicator, FlatList } from "react-native"
 import { useQuery } from "@tanstack/react-query"
 
@@ -24,10 +25,10 @@ export default function ProfileScreen() {
         data={posts}
         contentContainerClassName="w-full"
         ListHeaderComponent={() => (
-          <>
+          <React.Fragment>
             <ProfileHeader />
             <Text className="text-white text-lg font-bold mt-4 m-2">串文</Text>
-          </>
+          </React.Fragment>
         )}
         renderItem={({ item }) => <PostListItem post={item} />}
       />

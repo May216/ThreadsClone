@@ -1,105 +1,41 @@
 import { useState } from "react";
 import { View, Text, TextInput, Pressable, KeyboardAvoidingView, Platform, ActivityIndicator, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { router, useLocalSearchParams } from "expo-router";
+import { useQuery } from "@tanstack/react-query";
+import { useLocalSearchParams } from "expo-router";
 import { Entypo } from "@expo/vector-icons";
-import { ImagePickerAsset, launchImageLibraryAsync } from 'expo-image-picker';
 
 import { useAuth } from "@/providers/AuthProvider";
-import { createPost } from "@/services/posts";
 import { ImagePreview, QuotePost, SupabaseImage, VideoPreview } from "@/components";
-import { supabase } from "@/lib/supabase";
 import { getPostById } from "@/services/posts";
+import { useMediaUpload, useCreatePost } from "@/hooks";
 
 export default function NewPostScreen() {
-  const queryClient = useQueryClient();
   const params = useLocalSearchParams<{ parent_id: string, post_type: string }>();
   const parentId = params.parent_id;
   const postType = params.post_type;
 
-  const { user, profile } = useAuth();
+  const { profile } = useAuth();
   const [text, setText] = useState('');
-  const [medias, setMedias] = useState<ImagePickerAsset[]>([]);
+  
+  const { medias, pickMedia, removeMedia, uploadAllMedia } = useMediaUpload();
+  const { createPost, isCreating, error } = useCreatePost();
 
   const { data: parentPost } = useQuery({
     queryKey: ['post', parentId],
     queryFn: () => getPostById(parentId),
     enabled: !!parentId
-  })
-
-  const { mutate, isPending, error } = useMutation({
-    mutationFn: async () => await handlePost(),
-    onSuccess: () => {
-      setText('');
-      setMedias([]);
-      router.back();
-      queryClient.invalidateQueries({ queryKey: ['posts'] });
-      queryClient.invalidateQueries({ queryKey: ['reposts', parentId] });
-    },
-    onError: (error) => {
-      console.error(error);
-    }
-  })
-
-  const pickImage = async () => {
-    let result = await launchImageLibraryAsync({
-      mediaTypes: ['images', 'videos'],
-      quality: 1,
-      allowsMultipleSelection: true,
-      selectionLimit: 20,
-      orderedSelection: true
-    });
-
-    if (!result.canceled) {
-      setMedias(prevMedias => [...prevMedias, ...result.assets]);
-    }
-  };
-
-  const uploadMedia = async (media: ImagePickerAsset) => {
-    if (!media) return;
-    const arraybuffer = await fetch(media.uri).then(res => res.arrayBuffer());
-    const fileExt = media.uri?.split('.').pop()?.toLowerCase();
-    const path = `${Date.now()}.${fileExt}`;
-    const { data, error: uploadError } = await supabase.storage
-      .from('media')
-      .upload(path, arraybuffer, {
-        contentType: media.mimeType
-      });
-    if (uploadError) {
-      throw uploadError;
-    }
-    return data.path;
-  }
+  });
 
   const handlePost = async () => {
-    try {
-      let imageUrls: string[] = [];
-      if (medias.length > 0) {
-        const mediaPromises = medias.map(uploadMedia);
-        imageUrls = await Promise.all(mediaPromises) as string[];
-      }
-      if (postType === 'quote') {
-        return createPost({
-          post_type: 'quote',
-          content: text,
-          user_id: user!.id,
-          parent_id: parentId,
-          medias: imageUrls.length > 0 ? imageUrls : undefined
-        });
-      } else {
-        return createPost({
-          post_type: 'post',
-          content: text,
-          user_id: user!.id,
-          medias: imageUrls.length > 0 ? imageUrls : undefined
-        });
-      }
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  }
+    const mediaUrls = await uploadAllMedia();
+    createPost({
+      content: text,
+      postType: postType as 'post' | 'quote',
+      parentId,
+      mediaUrls
+    });
+  };
 
   return (
     <SafeAreaView className="p-4 flex-1" edges={['bottom']}>
@@ -146,20 +82,20 @@ export default function NewPostScreen() {
                       <ImagePreview
                         key={index}
                         uri={media.uri}
-                        onPress={() => setMedias(medias.filter((_, i) => i !== index))}
+                        onPress={() => removeMedia(index)}
                       />
                     ) : (
                       <VideoPreview
                         key={index}
                         uri={media.uri}
-                        onPress={() => setMedias(medias.filter((_, i) => i !== index))}
+                        onPress={() => removeMedia(index)}
                       />
                     ))}
                   </View>
                 </ScrollView>
               )}
               <View className="flex-row items-center gap-2 mt-4">
-                <Entypo name="images" size={20} color="gray" onPress={pickImage} />
+                <Entypo name="images" size={20} color="gray" onPress={pickMedia} />
               </View>
             </View>
             {postType === 'quote' && (
@@ -170,14 +106,14 @@ export default function NewPostScreen() {
         {/* post button */}
         <View className="mt-auto">
           <Pressable
-            className={`p-3 px-6 self-end rounded-full ${isPending ? 'bg-white/50' : 'bg-white'}`}
-            disabled={isPending}
-            onPress={() => mutate()}
+            className={`p-3 px-6 self-end rounded-full ${isCreating ? 'bg-white/50' : 'bg-white'}`}
+            disabled={isCreating}
+            onPress={handlePost}
           >
-            {isPending ? <ActivityIndicator /> : <Text>發佈</Text>}
+            {isCreating ? <ActivityIndicator /> : <Text>發佈</Text>}
           </Pressable>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
-  )
+  );
 }
