@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { PostListItem, PostReplyInput } from "@/components";
 import { getPostById, getPostReplies } from "@/services/posts";
-import { PostDetails } from "@/components/PostDetails";
+import { PostDetails } from "@/components/post";
 
 export default function PostDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();

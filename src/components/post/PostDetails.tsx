@@ -7,7 +7,7 @@ import relativeTime from "dayjs/plugin/relativeTime"
 import { InteractionButton } from "../common"
 import { SupabaseImage } from "../media"
 import { PostMedia } from "./PostMedia"
-import { usePostInteractions } from "@/hooks/usePostInteractions"
+import { usePostInteractions } from "@/hooks"
 import { Tables } from "@/types/database.types"
 
 dayjs.extend(relativeTime)
