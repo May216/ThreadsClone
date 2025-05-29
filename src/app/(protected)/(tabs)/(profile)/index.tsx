@@ -22,7 +22,7 @@ export default function ProfileScreen() {
     <View className="flex-1 justify-center">
       <FlatList
         keyExtractor={(item) => item.id}
-        data={posts}
+        data={posts?.filter(post => ['post', 'quote'].includes(post.post_type))}
         contentContainerClassName="w-full"
         ListHeaderComponent={() => (
           <React.Fragment>

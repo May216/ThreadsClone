@@ -7,6 +7,7 @@ interface InteractionButtonProps {
   count?: number;
   accessibilityLabel: string;
   color?: string;
+  size?: number;
   onPress: () => void;
 }
 
@@ -15,6 +16,7 @@ export const InteractionButton = memo(({
   count,
   accessibilityLabel,
   color = "#d1d5db",
+  size = 20,
   onPress,
 }: InteractionButtonProps) => (
   <Pressable
@@ -23,7 +25,7 @@ export const InteractionButton = memo(({
     accessibilityRole="button"
     accessibilityLabel={accessibilityLabel}
   >
-    <Ionicons name={icon} size={20} color={color} />
+    <Ionicons name={icon} size={size} color={color} />
     <Text className="ml-2 text-sm w-6" style={{ color }}>
       {count && count > 0 ? count : ''}
     </Text>

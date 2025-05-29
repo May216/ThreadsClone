@@ -84,6 +84,7 @@ export const PostListItem = memo(({ post, isLastInGroup = true }: { post: PostWi
             <InteractionButton
               icon="chatbubble-outline"
               count={post.replies?.[0]?.count}
+              size={18}
               accessibilityLabel={`回覆 ${post.user.username} 的貼文`}
               onPress={handleReply}
             />
