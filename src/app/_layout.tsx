@@ -1,9 +1,10 @@
 import '../../global.css'
 import { Slot } from "expo-router"
 import { ThemeProvider, DarkTheme } from '@react-navigation/native'
-import { AuthProvider } from '@/providers/AuthProvider'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ActionSheetProvider } from '@expo/react-native-action-sheet'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { AuthProvider } from '@/providers/AuthProvider'
+import { BottomSheetProvider } from '@/providers/BottomSheetProvider'
 
 const queryClient = new QueryClient()
 
@@ -21,11 +22,13 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={myTheme}>
       <QueryClientProvider client={queryClient}>
-        <ActionSheetProvider>
-          <AuthProvider>
-            <Slot />
-          </AuthProvider>
-        </ActionSheetProvider>
+        <AuthProvider>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <BottomSheetProvider>
+              <Slot />
+            </BottomSheetProvider>
+          </GestureHandlerRootView>
+        </AuthProvider>
       </QueryClientProvider>
     </ThemeProvider>
   )

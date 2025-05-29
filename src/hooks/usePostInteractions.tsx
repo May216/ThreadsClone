@@ -1,11 +1,12 @@
 import { Alert } from "react-native"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { useActionSheet } from '@expo/react-native-action-sheet'
 import { router } from "expo-router"
+import { Ionicons } from '@expo/vector-icons';
 
 import { usePostActions } from "./usePostActions"
 import { useAuth } from "@/providers/AuthProvider"
 import { toggleLike, getPostLikes, getUserLikeStatus, getPostRepostsCount, getUserRepostsStatus, toggleRepost } from "@/services/interactions"
+import { useBottomSheet } from "@/providers/BottomSheetProvider"
 import { Tables } from "@/types/database.types"
 
 type PostWithUser = Tables<'posts'> & {
@@ -18,7 +19,7 @@ type PostWithUser = Tables<'posts'> & {
 export const usePostInteractions = (post: PostWithUser) => {
   const queryClient = useQueryClient()
   const { user } = useAuth()
-  const { showActionSheetWithOptions } = useActionSheet()
+  const { open: openBottomSheet } = useBottomSheet()
   const { deletePost } = usePostActions(post)
 
   const postId = post.id
@@ -63,29 +64,28 @@ export const usePostInteractions = (post: PostWithUser) => {
   })
 
   const handleRepost = () => {
-    const options = hasReposted
-      ? ['移除', '引用', '取消']
-      : ['轉發', '引用', '取消']
-    const destructiveButtonIndex = hasReposted ? 0 : undefined
-    const cancelButtonIndex = 2
-
-    showActionSheetWithOptions(
-      {
-        options,
-        cancelButtonIndex,
-        destructiveButtonIndex,
-      },
-      (buttonIndex) => {
-        if (buttonIndex === 0) {
+    openBottomSheet('action', {
+      options: [
+        {
+          key: 'repost',
+          label: hasReposted ? '移除' : '轉發',
+          danger: hasReposted,
+          icon: <Ionicons name={hasReposted ? "close" : "repeat"} size={24} color={hasReposted ? "red" : "white"} />
+        },
+        {
+          key: 'quote',
+          label: '引用',
+          icon: <Ionicons name="chatbubble-outline" size={24} color="white" />
+        }
+      ],
+      onSelect: (key) => {        
+        if (key === 'repost') {
           repostMutation.mutate()
-        } else if (buttonIndex === 1) {
-          router.push({
-            pathname: '/(protected)/newPost',
-            params: { parent_id: postId, post_type: 'quote' }
-          })
+        } else if (key === 'quote') {
+          router.push({ pathname: '/(protected)/newPost', params: { parent_id: postId, post_type: 'quote' } })
         }
       }
-    )
+    })
   }
 
   const handleReply = () => {
@@ -98,23 +98,27 @@ export const usePostInteractions = (post: PostWithUser) => {
 
   const handleMore = () => {
     if (user?.id === post.user.id) {
-      const options = ['編輯', '刪除', '取消']
-      const destructiveButtonIndex = 1
-      const cancelButtonIndex = 2
-
-      showActionSheetWithOptions(
-        {
-          options,
-          cancelButtonIndex,
-          destructiveButtonIndex,
-        },
-        (buttonIndex) => {
-          if (buttonIndex === 0) {
+      openBottomSheet('action', {
+        options: [
+          {
+            key: 'edit',
+            label: '編輯',
+            icon: <Ionicons name="create-outline" size={24} color="white" />
+          },
+          {
+            key: 'delete',
+            label: '刪除',
+            danger: true,
+            icon: <Ionicons name="trash-outline" size={24} color="red" />
+          }
+        ],
+        onSelect: (key) => {        
+          if (key === 'edit') {
             router.push({
               pathname: '/(protected)/updatePost',
               params: { post_id: post.id }
             })
-          } else if (buttonIndex === 1) {
+          } else if (key === 'delete') {
             Alert.alert(
               '確認刪除',
               '確定要刪除這則貼文嗎？',
@@ -125,23 +129,9 @@ export const usePostInteractions = (post: PostWithUser) => {
             )
           }
         }
-      )
+      })
     } else {
-      const options = ['檢舉', '取消']
-      const cancelButtonIndex = 1
-
-      showActionSheetWithOptions(
-        {
-          options,
-          cancelButtonIndex,
-        },
-        (buttonIndex) => {
-          if (buttonIndex === 0) {
-            // TODO: 實現檢舉功能
-            console.log('Report post:', post.id)
-          }
-        }
-      )
+      
     }
   }
 
