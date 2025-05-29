@@ -52,7 +52,7 @@ export default function PostDetailsScreen() {
           </React.Fragment>
         )}
       />
-      <PostReplyInput postId={id} />
+      <PostReplyInput postId={id} postUser={post?.user?.username} />
     </View>
   );
 }

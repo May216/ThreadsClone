@@ -5,7 +5,7 @@ import { useAuth } from "@/providers/AuthProvider";
 
 interface CreatePostParams {
   content: string;
-  postType: 'post' | 'quote';
+  postType: 'post' | 'quote' | 'reply';
   parentId?: string;
   mediaUrls?: string[];
 }
@@ -16,9 +16,9 @@ export const useCreatePost = () => {
 
   const { mutate, isPending, error } = useMutation({
     mutationFn: async ({ content, postType, parentId, mediaUrls }: CreatePostParams) => {
-      if (postType === 'quote') {
+      if (postType === 'quote' || postType === 'reply') {
         return createPost({
-          post_type: 'quote',
+          post_type: postType,
           content,
           user_id: user!.id,
           parent_id: parentId,

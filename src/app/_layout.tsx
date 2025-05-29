@@ -3,8 +3,13 @@ import { Slot } from "expo-router"
 import { ThemeProvider, DarkTheme } from '@react-navigation/native'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import dayjs from 'dayjs'
+
 import { AuthProvider } from '@/providers/AuthProvider'
 import { BottomSheetProvider } from '@/providers/BottomSheetProvider'
+
+require('dayjs/locale/zh-tw')
+dayjs.locale('zh-tw')
 
 const queryClient = new QueryClient()
 

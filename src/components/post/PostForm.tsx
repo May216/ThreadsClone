@@ -14,7 +14,7 @@ interface PostFormProps {
   initialContent?: string;
   parentId?: string;
   postId?: string;
-  initialMedias?: string[];
+  initialMedias?: string[] | string;
   isSubmitting: boolean;
   error?: Error;
   submitButtonText: string;
@@ -35,7 +35,7 @@ export const PostForm = ({
   const [text, setText] = useState(initialContent);
   const { medias, setMedias, pickMedia, removeMedia, uploadAllMedia, deleteRemovedMedias } = useMediaUpload();
   const isDisabled = isSubmitting || (!text && medias.length === 0);
-
+  
   useEffect(() => {
     if (initialContent) {
       setText(initialContent);
@@ -44,16 +44,18 @@ export const PostForm = ({
 
   useEffect(() => {
     if (initialMedias) {
-      const initialMediaAssets = initialMedias.map(filename => {
-        const url = `${process.env.EXPO_PUBLIC_SUPABASE_URL}/storage/v1/object/public/media/${filename}`;
-        return {
-          uri: url,
-          type: filename.match(/\.(jpg|jpeg|png|gif)$/i) ? 'image' as const : 'video' as const,
-          mimeType: filename.match(/\.(jpg|jpeg|png|gif)$/i) ? 'image/jpeg' : 'video/mp4',
-          width: 0,
-          height: 0,
-        };
-      });
+      const initialMediaAssets = typeof initialMedias === 'string'
+        ? JSON.parse(initialMedias)
+        : initialMedias.map(filename => {
+          const url = `${process.env.EXPO_PUBLIC_SUPABASE_URL}/storage/v1/object/public/media/${filename}`;
+          return {
+            uri: url,
+            type: filename.match(/\.(jpg|jpeg|png|gif)$/i) ? 'image' as const : 'video' as const,
+            mimeType: filename.match(/\.(jpg|jpeg|png|gif)$/i) ? 'image/jpeg' : 'video/mp4',
+            width: 0,
+            height: 0,
+          };
+        });
       setMedias(initialMediaAssets);
     }
   }, [initialMedias]);
