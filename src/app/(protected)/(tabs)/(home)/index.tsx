@@ -26,11 +26,18 @@ export default function HomeScreen() {
     return <Text>Error: {error.message}</Text>
   }
 
+  const ListFooterComponent = () => {
+    if (isFetchingNextPage) {
+      return <ActivityIndicator />
+    }
+    return null;
+  }
+
   return (
     <FlatList
       data={posts?.pages.flatMap(page => page) || []}
       keyExtractor={(item) => item.id}
-      contentContainerClassName="grow"
+      // contentContainerClassName="grow"
       renderItem={({ item }) => (
         <React.Fragment>
           {!!item.parent_id && <PostListItem post={item.parent} isLastInGroup={false} />}
@@ -38,12 +45,7 @@ export default function HomeScreen() {
         </React.Fragment>
       )}
       onEndReachedThreshold={0.5}
-      ListFooterComponent={({ distanceFromEnd }) => {        
-        if (!distanceFromEnd) {
-          return null;
-        }
-        return <ActivityIndicator />
-      }}
+      ListFooterComponent={ListFooterComponent}
       onEndReached={() => {
         if (hasNextPage && !isFetchingNextPage) {
           fetchNextPage()

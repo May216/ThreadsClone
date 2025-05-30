@@ -9,6 +9,8 @@ import { ImagePreview, QuotePost, SupabaseImage, VideoPreview } from "@/componen
 import { getPostById } from "@/services/posts";
 import { useMediaUpload } from "@/hooks";
 
+const MAX_CHARACTERS = 200;
+
 interface PostFormProps {
   isEdit?: boolean;
   initialContent?: string;
@@ -34,8 +36,11 @@ export const PostForm = ({
   const { profile } = useAuth();
   const [text, setText] = useState(initialContent);
   const { medias, setMedias, pickMedia, removeMedia, uploadAllMedia, deleteRemovedMedias } = useMediaUpload();
-  const isDisabled = isSubmitting || (!text && medias.length === 0);
-  
+  const isDisabled = isSubmitting || (!text && medias.length === 0) || text.length > MAX_CHARACTERS;
+  const characterCount = text.length;
+  const isOverLimit = characterCount > MAX_CHARACTERS;
+  const overLimitCount = isOverLimit ? characterCount - MAX_CHARACTERS : 0;
+
   useEffect(() => {
     if (initialContent) {
       setText(initialContent);
@@ -98,15 +103,28 @@ export const PostForm = ({
           <View className="flex-1">
             <Text className="text-white text-xl font-bold">{profile?.username}</Text>
             {/* content */}
-            <TextInput
-              placeholder={isEdit ? '編輯內容' : '有什麼新鮮事？'}
-              placeholderTextColor="gray"
-              className="text-white text-lg"
-              multiline
-              numberOfLines={4}
-              value={text}
-              onChangeText={setText}
-            />
+            <View>
+              <TextInput
+                placeholder={isEdit ? '編輯內容' : '有什麼新鮮事？'}
+                placeholderTextColor="gray"
+                multiline={true}
+                numberOfLines={20}
+                className="text-white"
+                onChangeText={setText}
+              >
+                <Text className="text-lg">{text.slice(0, MAX_CHARACTERS)}</Text>
+                {isOverLimit && (
+                  <Text className="text-lg bg-amber-900/40">{text.slice(MAX_CHARACTERS)}</Text>
+                )}
+              </TextInput>
+            </View>
+            {isOverLimit && (
+              <View className="mt-4">
+                <Text className="text-lg text-red-500">
+                  {`-${overLimitCount}`}
+                </Text>
+              </View>
+            )}
             {error && (
               <View className="mt-4">
                 <Text className="text-red-500">{error.message}</Text>

@@ -16,7 +16,17 @@ export default function SignupScreen() {
       return;
     }
     try {
-      const { data: { session }, error } = await supabase.auth.signUp({ email, password });
+      const { data: { session }, error } = await supabase.auth
+        .signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: email.split('@')[0],
+              username: email.split('@')[0]
+            }
+          }
+        });
       if (error) {
         Alert.alert(error.message);
       } 
