@@ -30,7 +30,8 @@ export const PostDetails = memo(({ post }: { post: PostWithUser }) => {
     handleRepost,
     handleReply,
     handleShare,
-    handleMore
+    handleMore,
+    handleUserPress
   } = usePostInteractions(post)
 
   return (
@@ -44,15 +45,17 @@ export const PostDetails = memo(({ post }: { post: PostWithUser }) => {
         <View className="flex-1 flex-row justify-between items-center">
           {/* avatar */}
           <View className="flex-row items-center gap-2">
-            <SupabaseImage
-              bucket="avatars"
-              path={post.user.avatar_url!}
-              className='w-12 h-12 rounded-full'
-              transform={{ width: 48, height: 48 }}
-            />
-            <Text className="text-white font-bold">
-              {post.user.username}
-            </Text>
+            <Pressable className="flex-row items-center gap-2" onPress={handleUserPress}>
+              <SupabaseImage
+                bucket="avatars"
+                path={post.user.avatar_url!}
+                className='w-12 h-12 rounded-full'
+                transform={{ width: 48, height: 48 }}
+              />
+              <Text className="text-white font-bold">
+                {post.user.username}
+              </Text>
+            </Pressable>
             <Text className="text-gray-500">
               {dayjs(post.created_at).fromNow()}
             </Text>

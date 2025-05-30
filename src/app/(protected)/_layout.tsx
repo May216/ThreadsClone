@@ -12,6 +12,13 @@ export default function ProtectedLayout() {
     <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen
+        name="profiles"
+        options={{
+          headerTitle: '',
+          headerBackButtonDisplayMode: 'minimal'
+        }}
+      />
+      <Stack.Screen
         name="newPost"
         options={{
           title: '新串文',

@@ -19,7 +19,7 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen name="notifications" options={{ title: '動態' }} />
-      <Tabs.Screen name="(profile)" options={{ headerShown: false }} />
+      <Tabs.Screen name="myProfile" options={{ headerShown: false }} />
     </Tabs>
   )
 }

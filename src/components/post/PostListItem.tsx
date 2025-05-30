@@ -30,7 +30,8 @@ export const PostListItem = memo(({ post, isLastInGroup = true }: { post: PostWi
     handleRepost,
     handleReply,
     handleShare,
-    handleMore
+    handleMore,
+    handleUserPress
   } = usePostInteractions(post)
 
   return (
@@ -42,12 +43,14 @@ export const PostListItem = memo(({ post, isLastInGroup = true }: { post: PostWi
       >
         {/* avatar */}
         <View className='mr-3 items-center gap-2'>
-          <SupabaseImage
-            bucket="avatars"
-            path={post.user.avatar_url!}
-            className='w-12 h-12 rounded-full'
-            transform={{ width: 48, height: 48 }}
-          />
+          <Pressable onPress={handleUserPress}>
+            <SupabaseImage
+              bucket="avatars"
+              path={post.user.avatar_url!}
+              className='w-12 h-12 rounded-full'
+              transform={{ width: 48, height: 48 }}
+            />
+          </Pressable>
           {!isLastInGroup && (
             <View className="w-[3px] flex-1 rounded-full bg-neutral-700 translate-y-2" />
           )}
@@ -58,7 +61,9 @@ export const PostListItem = memo(({ post, isLastInGroup = true }: { post: PostWi
           {/* user info */}
           <View className="flex-row justify-between items-center">
             <View className="flex-row items-center gap-2">
-              <Text className="text-white font-bold mr-2">{post.user.username}</Text>
+              <Pressable onPress={handleUserPress}>
+                <Text className="text-white font-bold mr-2">{post.user.username}</Text>
+              </Pressable>
               <Text className="text-gray-500">
                 {dayjs(post.created_at).fromNow()}
               </Text>

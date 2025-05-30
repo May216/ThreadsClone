@@ -1,22 +1,31 @@
-import { View, Text, ActivityIndicator, Pressable } from "react-native";
+import { View, Text, ActivityIndicator, Pressable, Alert } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "expo-router";
 
 import { SupabaseImage } from "../media"
 import { getProfileById } from "@/services/profiles"
 import { useAuth } from "@/providers/AuthProvider";
+import { useProfileActions } from "@/hooks";
 
-export const ProfileHeader = () => {
+export const ProfileHeader = ({ userId }: { userId: string }) => {
   const { user } = useAuth()
+  const { follow, unfollow, isFollowing } = useProfileActions(userId)
 
   const { data: profile, isLoading, error } = useQuery({
-    queryKey: ['profile', user?.id],
-    queryFn: () => getProfileById(user?.id!),
-    enabled: !!user?.id
+    queryKey: ['profile', userId],
+    queryFn: () => getProfileById(userId),
+    enabled: !!userId
   })
 
   if (isLoading) return <ActivityIndicator />
   if (error) return <Text className="text-white">Error: {error.message}</Text>
+
+  const handleUnFollow = () => {
+    Alert.alert('確認', '確認要取消追蹤嗎？', [
+      { text: '取消', style: 'cancel' },
+      { text: '確認', onPress: () => unfollow() }
+    ])
+  }
 
   return (
     <View className="p-4 gap-4">
@@ -30,23 +39,45 @@ export const ProfileHeader = () => {
         <SupabaseImage
           bucket="avatars"
           path={profile?.avatar_url}
-          className="w-16 h-16 rounded-full"
+          className="w-16 h-16 rounded-full bg-neutral-600/50"
           transform={{ width: 80, height: 80 }}
         />
       </View>
-      <Text className="text-white text-lg leading-snug">
-        {profile?.bio}
+      {profile?.bio && (
+        <Text className="text-white text-lg leading-snug">
+          {profile?.bio}
+        </Text>
+      )}
+      <Text className="text-neutral-600 text-lg leading-snug font-bold">
+        {profile?.followers_count} 粉絲
       </Text>
-      <View className="flex-row gap-2">
-        <Link href="/(profile)/edit" asChild>
-          <Pressable className="flex-1 py-2 rounded-lg border-2 border-neutral-800">
-            <Text className="text-white text-center">編輯個人檔案</Text>
+      {userId === user?.id ? (
+        <View className="flex-row gap-2">
+          <Link href="/myProfile/edit" asChild>
+            <Pressable className="flex-1 py-2 rounded-xl border-2 border-neutral-800">
+              <Text className="text-white text-center">編輯個人檔案</Text>
+            </Pressable>
+          </Link>
+          <Pressable className="flex-1 py-2 rounded-xl border-2 border-neutral-800">
+            <Text className="text-white text-center">分享個人檔案</Text>
           </Pressable>
-        </Link>
-        <Pressable className="flex-1 py-2 rounded-lg border-2 border-neutral-800">
-          <Text className="text-white text-center">分享個人檔案</Text>
-        </Pressable>
-      </View>
+        </View>
+      ) : (
+        <View className="flex-row gap-2">
+          {isFollowing ? (
+            <Pressable className="flex-1 py-2 rounded-xl border-2 border-neutral-800" onPress={handleUnFollow}>
+              <Text className="text-neutral-500 text-center">追蹤中</Text>
+            </Pressable>
+          ) : (
+            <Pressable className="flex-1 py-2 rounded-xl border-2 border-white bg-white" onPress={() => follow()}>
+              <Text className="text-black text-center">追蹤</Text>
+            </Pressable>
+          )}
+          <Pressable className="flex-1 py-2 rounded-xl border-2 border-neutral-800">
+            <Text className="text-white text-center">提及</Text>
+          </Pressable>
+        </View>
+      )}
     </View>
   )
 }

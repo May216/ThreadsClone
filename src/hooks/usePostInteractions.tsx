@@ -78,7 +78,7 @@ export const usePostInteractions = (post: PostWithUser) => {
           icon: <Ionicons name="chatbubble-outline" size={24} color="white" />
         }
       ],
-      onSelect: (key) => {        
+      onSelect: (key) => {
         if (key === 'repost') {
           repostMutation.mutate()
         } else if (key === 'quote') {
@@ -112,7 +112,7 @@ export const usePostInteractions = (post: PostWithUser) => {
             icon: <Ionicons name="trash-outline" size={24} color="red" />
           }
         ],
-        onSelect: (key) => {        
+        onSelect: (key) => {
           if (key === 'edit') {
             router.push({
               pathname: '/(protected)/updatePost',
@@ -131,7 +131,21 @@ export const usePostInteractions = (post: PostWithUser) => {
         }
       })
     } else {
-      
+
+    }
+  }
+
+  const handleUserPress = () => {
+    if (post.user.id === user?.id) {
+      router.push({ pathname: '/myProfile' })
+    } else {
+      router.push({
+        pathname: '/profiles/[id]',
+        params: {
+          id: post.user.id,
+          username: post.user.username
+        }
+      })
     }
   }
 
@@ -144,6 +158,7 @@ export const usePostInteractions = (post: PostWithUser) => {
     handleRepost,
     handleReply,
     handleShare,
-    handleMore
+    handleMore,
+    handleUserPress
   }
 } 
