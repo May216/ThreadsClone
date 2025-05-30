@@ -24,15 +24,6 @@ export const toggleLike = async (postId: string, userId: string) => {
   }
 }
 
-export const getPostLikes = async (postId: string) => {
-  const { data } = await supabase
-    .from('likes')
-    .select('*, user:profiles(*)')
-    .eq('post_id', postId)
-    .throwOnError()
-  return data
-}
-
 export const getUserLikeStatus = async (postId: string, userId: string) => {
   const { data } = await supabase
     .from('likes')
@@ -68,21 +59,6 @@ export const toggleRepost = async (postId: string, userId: string) => {
       .throwOnError()
     return { action: 'repost', data }
   }
-}
-
-export const getPostRepostsCount = async (postId: string) => {
-  const { data: reposts } = await supabase
-    .from('reposts')
-    .select('*')
-    .eq('post_id', postId)
-    .throwOnError()
-  const { data: quotes } = await supabase
-    .from('posts')
-    .select('*')
-    .eq('post_type', 'quote')
-    .eq('parent_id', postId)
-    .throwOnError()
-  return reposts.length + quotes.length
 }
 
 export const getUserRepostsStatus = async (postId: string, userId: string) => {

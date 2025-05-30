@@ -2,6 +2,13 @@ import { memo } from "react";
 import { Pressable, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
+const formatCount = (count: number): string => {
+  if (count >= 1000) {
+    return `${(count / 1000).toFixed(1).replace(/\.0$/, '')}K`;
+  }
+  return count.toString();
+};
+
 interface InteractionButtonProps {
   icon: keyof typeof Ionicons.glyphMap;
   count?: number;
@@ -27,7 +34,7 @@ export const InteractionButton = memo(({
   >
     <Ionicons name={icon} size={size} color={color} />
     <Text className="ml-2 text-sm w-6" style={{ color }}>
-      {count && count > 0 ? count : ''}
+      {count && count > 0 ? formatCount(count) : ''}
     </Text>
   </Pressable>
 ));

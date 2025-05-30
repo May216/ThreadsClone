@@ -33,11 +33,8 @@ export const useCreatePost = () => {
         });
       }
     },
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
-      if (variables.parentId) {
-        queryClient.invalidateQueries({ queryKey: ['reposts', variables.parentId] });
-      }
       router.back();
     },
     onError: (error) => {

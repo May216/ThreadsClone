@@ -17,9 +17,6 @@ export const usePostActions = (post: PostWithUser) => {
     mutationFn: () => deletePost(post.id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
-      if (post.parent_id) {
-        queryClient.invalidateQueries({ queryKey: ['reposts', post.parent_id] });
-      }
     }
   });
 
@@ -31,9 +28,6 @@ export const usePostActions = (post: PostWithUser) => {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
-      if (post.parent_id) {
-        queryClient.invalidateQueries({ queryKey: ['reposts', post.parent_id] });
-      }
       router.back();
     }
   });

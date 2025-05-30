@@ -44,6 +44,9 @@ export type Database = {
           medias: string[] | null
           post_type: 'post' | 'quote' | 'reply'
           updated_at: string
+          likes_count: number
+          reposts_count: number
+          replies_count: number
         }
         Insert: {
           content?: string | null
@@ -54,6 +57,9 @@ export type Database = {
           medias?: string[] | null
           post_type: 'post' | 'quote' | 'reply'
           updated_at?: string
+          likes_count?: number
+          reposts_count?: number
+          replies_count?: number
         }
         Update: {
           content?: string | null
@@ -64,6 +70,9 @@ export type Database = {
           medias?: string[] | null
           post_type?: 'post' | 'quote' | 'reply'
           updated_at?: string
+          likes_count?: number
+          reposts_count?: number
+          replies_count?: number
         }
         Relationships: [
           {

@@ -1,11 +1,11 @@
 import { Alert } from "react-native"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { router } from "expo-router"
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, Feather } from '@expo/vector-icons';
 
 import { usePostActions } from "./usePostActions"
 import { useAuth } from "@/providers/AuthProvider"
-import { toggleLike, getPostLikes, getUserLikeStatus, getPostRepostsCount, getUserRepostsStatus, toggleRepost } from "@/services/interactions"
+import { toggleLike, getUserLikeStatus, getUserRepostsStatus, toggleRepost } from "@/services/interactions"
 import { useBottomSheet } from "@/providers/BottomSheetProvider"
 import { Tables } from "@/types/database.types"
 
@@ -25,11 +25,6 @@ export const usePostInteractions = (post: PostWithUser) => {
   const postId = post.id
   const userId = user?.id
 
-  const { data: likes } = useQuery({
-    queryKey: ['likes', postId],
-    queryFn: () => getPostLikes(postId)
-  })
-
   const { data: hasLiked } = useQuery({
     queryKey: ['userLike', postId, userId],
     queryFn: () => getUserLikeStatus(postId, userId!),
@@ -39,14 +34,9 @@ export const usePostInteractions = (post: PostWithUser) => {
   const likeMutation = useMutation({
     mutationFn: () => toggleLike(postId, userId!),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['likes', postId] })
+      queryClient.invalidateQueries({ queryKey: ['posts'] })
       queryClient.invalidateQueries({ queryKey: ['userLike', postId, userId] })
     }
-  })
-
-  const { data: repostsCount } = useQuery({
-    queryKey: ['reposts', postId],
-    queryFn: () => getPostRepostsCount(postId)
   })
 
   const { data: hasReposted } = useQuery({
@@ -58,7 +48,7 @@ export const usePostInteractions = (post: PostWithUser) => {
   const repostMutation = useMutation({
     mutationFn: () => toggleRepost(postId, userId!),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['reposts', postId] })
+      queryClient.invalidateQueries({ queryKey: ['posts'] })
       queryClient.invalidateQueries({ queryKey: ['userRepost', postId, userId] })
     }
   })
@@ -103,13 +93,13 @@ export const usePostInteractions = (post: PostWithUser) => {
           {
             key: 'edit',
             label: '編輯',
-            icon: <Ionicons name="create-outline" size={24} color="white" />
+            icon: <Feather name="edit" size={20} color="white" />
           },
           {
             key: 'delete',
             label: '刪除',
             danger: true,
-            icon: <Ionicons name="trash-outline" size={24} color="red" />
+            icon: <Feather name="trash" size={20} color="red" />
           }
         ],
         onSelect: (key) => {
@@ -131,7 +121,21 @@ export const usePostInteractions = (post: PostWithUser) => {
         }
       })
     } else {
-
+      openBottomSheet('action', {
+        options: [
+          {
+            key: 'report',
+            label: '檢舉',
+            danger: true,
+            icon: <Ionicons name="alert-circle-outline" size={24} color="red" />
+          }
+        ],
+        onSelect: (key) => {
+          if (key === 'report') {
+            console.log('Report post:', postId)
+          }
+        }
+      })
     }
   }
 
@@ -150,10 +154,8 @@ export const usePostInteractions = (post: PostWithUser) => {
   }
 
   return {
-    likes,
     hasLiked,
     likeMutation,
-    repostsCount,
     hasReposted,
     handleRepost,
     handleReply,

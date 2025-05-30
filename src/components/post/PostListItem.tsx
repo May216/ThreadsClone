@@ -1,4 +1,3 @@
-import { memo } from "react"
 import { View, Text, Pressable } from "react-native"
 import { Link } from "expo-router"
 import dayjs from "dayjs"
@@ -20,12 +19,10 @@ type PostWithUser = Tables<'posts'> & {
   }[]
 }
 
-export const PostListItem = memo(({ post, isLastInGroup = true }: { post: PostWithUser, isLastInGroup?: boolean }) => {
+export const PostListItem = ({ post, isLastInGroup = true }: { post: PostWithUser, isLastInGroup?: boolean }) => {
   const {
-    likes,
     hasLiked,
     likeMutation,
-    repostsCount,
     hasReposted,
     handleRepost,
     handleReply,
@@ -81,21 +78,21 @@ export const PostListItem = memo(({ post, isLastInGroup = true }: { post: PostWi
           <View className="flex-row gap-6">
             <InteractionButton
               icon={hasLiked ? "heart" : "heart-outline"}
-              count={likes?.length}
+              count={post.likes_count}
               accessibilityLabel={hasLiked ? "取消點讚" : "點讚"}
               color={hasLiked ? "#E5397F" : undefined}
               onPress={() => likeMutation.mutate()}
             />
             <InteractionButton
               icon="chatbubble-outline"
-              count={post.replies?.[0]?.count}
+              count={post.replies_count}
               size={18}
               accessibilityLabel={`回覆 ${post.user.username} 的貼文`}
               onPress={handleReply}
             />
             <InteractionButton
               icon="repeat"
-              count={repostsCount}
+              count={post.reposts_count}
               accessibilityLabel={hasReposted ? "取消轉發" : "轉發"}
               color={hasReposted ? "#53B780" : undefined}
               onPress={handleRepost}
@@ -110,4 +107,4 @@ export const PostListItem = memo(({ post, isLastInGroup = true }: { post: PostWi
       </Pressable>
     </Link>
   )
-})
+}

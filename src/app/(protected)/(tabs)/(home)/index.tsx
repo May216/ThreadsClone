@@ -1,3 +1,4 @@
+import React from 'react';
 import { ActivityIndicator, FlatList, Text, RefreshControl } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 
@@ -25,14 +26,19 @@ export default function HomeScreen() {
       keyExtractor={(item) => item.id}
       contentContainerClassName="grow"
       refreshControl={
-        <RefreshControl 
-          refreshing={isRefetching} 
+        <RefreshControl
+          refreshing={isRefetching}
           onRefresh={refetch}
           colors={['#fff']}
           tintColor="#fff"
         />
       }
-      renderItem={({ item }) => <PostListItem post={item} />}
+      renderItem={({ item }) => (
+        <React.Fragment>
+          {!!item.parent_id && <PostListItem post={item.parent} isLastInGroup={false} />}
+          <PostListItem post={item} />
+        </React.Fragment>
+      )}
     />
   );
 }

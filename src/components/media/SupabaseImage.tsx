@@ -35,7 +35,7 @@ export const SupabaseImage = ({ bucket, path, className, transform }: SupabaseIm
   return (
     <Image
       source={{ uri: data || undefined }}
-      className={`${className} bg-neutral-900`}
+      className={`${className} bg-neutral-600/50`}
     />
   )
 }

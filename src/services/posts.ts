@@ -4,12 +4,37 @@ import { TablesInsert } from "@/types/database.types";
 type PostInput = TablesInsert<'posts'>
 
 export const fetchPosts = async () => {
-  const { data } = await supabase
+  const { data: posts } = await supabase
     .from('posts')
     .select('*, user: profiles(*), replies:posts(count)')
     .order('created_at', { ascending: false })
     .throwOnError();
-  return data;
+
+  const postsWithParent = posts?.filter(post => post.parent_id) || [];
+  const parentIds = [...new Set(postsWithParent.map(post => post.parent_id))];
+
+  const { data: parentPosts } = await supabase
+    .from('posts')
+    .select('*, user: profiles(*), replies:posts(count)')
+    .in('id', parentIds)
+    .throwOnError();
+
+  const parentPostsMap = parentPosts?.reduce((acc, post) => {
+    acc[post.id] = post;
+    return acc;
+  }, {} as Record<string, any>) || {};
+
+  const postsWithParentData = posts?.map(post => {
+    if (post.parent_id) {
+      return {
+        ...post,
+        parent: parentPostsMap[post.parent_id]
+      };
+    }
+    return post;
+  });
+
+  return postsWithParentData;
 }
 
 export const createPost = async (newPost: PostInput) => {
