@@ -3,11 +3,12 @@ import { TablesInsert } from "@/types/database.types";
 
 type PostInput = TablesInsert<'posts'>
 
-export const fetchPosts = async () => {
+export const fetchPosts = async ({ pageParam = 1 }) => {
   const { data: posts } = await supabase
     .from('posts')
     .select('*, user: profiles(*), replies:posts(count)')
     .order('created_at', { ascending: false })
+    .range((pageParam - 1) * 5, pageParam * 5 - 1)
     .throwOnError();
 
   const postsWithParent = posts?.filter(post => post.parent_id) || [];
