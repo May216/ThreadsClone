@@ -8,16 +8,9 @@ import { ConfirmModal, InteractionButton } from "../common"
 import { SupabaseImage } from "../media"
 import { PostMedia } from "./PostMedia"
 import { usePostActions, usePostInteractions } from "@/hooks"
-import { Tables } from "@/types/database.types"
+import { PostWithUser } from "@/types/post"
 
 dayjs.extend(relativeTime)
-
-type PostWithUser = Tables<'posts'> & {
-  user: Tables<'profiles'>
-  replies: {
-    count: number
-  }[]
-}
 
 export const PostListItem = ({ post, isLastInGroup = true }: { post: PostWithUser, isLastInGroup?: boolean }) => {
   const {
@@ -53,11 +46,7 @@ export const PostListItem = ({ post, isLastInGroup = true }: { post: PostWithUse
 
   return (
     <Link href={`posts/${post.id}`} asChild>
-      <Pressable
-        className={`flex-row p-4 ${isLastInGroup ? 'border-b border-gray-800/70' : ''}`}
-        accessibilityRole="none"
-        accessibilityLabel={`Post by ${post.user.username}`}
-      >
+      <Pressable className={`flex-row p-4 ${isLastInGroup ? 'border-b border-gray-800/70' : ''}`}>
         {/* avatar */}
         <View className='mr-3 items-center gap-2'>
           <Pressable onPress={handleUserPress}>

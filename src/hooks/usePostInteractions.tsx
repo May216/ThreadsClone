@@ -6,14 +6,7 @@ import { Ionicons, Feather } from '@expo/vector-icons';
 import { useAuth } from "@/providers/AuthProvider"
 import { toggleLike, getUserLikeStatus, getUserRepostsStatus, toggleRepost } from "@/services/interactions"
 import { useBottomSheet } from "@/providers/BottomSheetProvider"
-import { Tables } from "@/types/database.types"
-
-type PostWithUser = Tables<'posts'> & {
-  user: Tables<'profiles'>
-  replies: {
-    count: number
-  }[]
-}
+import { PostWithUser } from "@/types/post"
 
 export const usePostInteractions = (post: PostWithUser) => {
   const queryClient = useQueryClient()

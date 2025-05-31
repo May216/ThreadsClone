@@ -1,14 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { deletePost, updatePost } from "@/services/posts";
-import { Tables } from "@/types/database.types";
-
-type PostWithUser = Tables<'posts'> & {
-  user: Tables<'profiles'>
-  replies: {
-    count: number
-  }[]
-}
+import { PostWithUser } from "@/types/post";
 
 export const usePostActions = (post: PostWithUser) => {
   const queryClient = useQueryClient();

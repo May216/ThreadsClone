@@ -9,16 +9,9 @@ import { InteractionButton } from "../common"
 import { SupabaseImage } from "../media"
 import { PostMedia } from "./PostMedia"
 import { usePostInteractions } from "@/hooks"
-import { Tables } from "@/types/database.types"
+import { PostWithUser } from "@/types/post"
 
 dayjs.extend(relativeTime)
-
-type PostWithUser = Tables<'posts'> & {
-  user: Tables<'profiles'>
-  replies: {
-    count: number
-  }[]
-}
 
 export const PostDetails = ({ post }: { post: PostWithUser }) => {
   const {

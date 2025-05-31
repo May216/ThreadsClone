@@ -1,16 +1,8 @@
 import { supabase } from "@/lib/supabase";
 import { TablesInsert } from "@/types/database.types";
+import { PostInput, PostWithUser } from "@/types/post";
 
-type PostInput = TablesInsert<'posts'>
-
-export const fetchPosts = async ({ pageParam = 1 }) => {
-  const { data: posts } = await supabase
-    .from('posts')
-    .select('*, user: profiles(*), replies:posts(count)')
-    .order('created_at', { ascending: false })
-    .range((pageParam - 1) * 5, pageParam * 5 - 1)
-    .throwOnError();
-
+const getPostsWithParentData = async (posts: TablesInsert<'posts'>[]) => {
   const postsWithParent = posts?.filter(post => post.parent_id) || [];
   const parentIds = [...new Set(postsWithParent.map(post => post.parent_id))];
 
@@ -34,6 +26,19 @@ export const fetchPosts = async ({ pageParam = 1 }) => {
     }
     return post;
   });
+
+  return postsWithParentData;
+}
+
+export const fetchPosts = async ({ pageParam = 1 }) => {
+  const { data: posts } = await supabase
+    .from('posts')
+    .select('*, user: profiles(*), replies:posts(count)')
+    .order('created_at', { ascending: false })
+    .range((pageParam - 1) * 5, pageParam * 5 - 1)
+    .throwOnError();
+
+  const postsWithParentData = await getPostsWithParentData(posts);
 
   return postsWithParentData;
 }
@@ -69,7 +74,7 @@ export const getPostById = async (id: string) => {
   return data;
 }
 
-export const getPostsByUserId = async (id: string) => {
+export const getPostsByUserId = async (id: string): Promise<PostWithUser[]> => {
   const { data } = await supabase
     .from('posts')
     .select('*, user:profiles(*), replies:posts(count)')
@@ -77,7 +82,9 @@ export const getPostsByUserId = async (id: string) => {
     .order('created_at', { ascending: false })
     .throwOnError();
 
-  return data;
+  const postsWithParentData = await getPostsWithParentData(data);
+
+  return postsWithParentData as PostWithUser[];
 }
 
 export const getPostReplies = async (id: string) => {
@@ -100,4 +107,21 @@ export const updatePost = async (postId: string, updates: Partial<PostInput>) =>
     .throwOnError();
 
   return data;
+}
+
+export const getUserReposts = async (userId: string): Promise<PostWithUser[]> => {
+  const { data: reposts } = await supabase
+    .from('reposts')
+    .select('post_id')
+    .eq('user_id', userId)
+    .throwOnError();
+
+  const { data: posts } = await supabase
+    .from('posts')
+    .select('*, user: profiles(*), replies:posts(count)')
+    .in('id', reposts?.map(repost => repost.post_id) || [])
+    .order('created_at', { ascending: false })
+    .throwOnError();
+
+  return posts as PostWithUser[];
 }

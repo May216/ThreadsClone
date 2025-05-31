@@ -5,13 +5,10 @@ import relativeTime from "dayjs/plugin/relativeTime"
 
 import { Video, SupabaseImage } from "../media"
 import { supabase } from "@/lib/supabase"
-import { Tables } from "@/types/database.types"
+import { PostWithUser } from "@/types/post"
 
 dayjs.extend(relativeTime)
 
-type PostWithUser = Tables<'posts'> & {
-  user: Tables<'profiles'>
-}
 
 export const QuotePost = memo(({ post }: { post: PostWithUser }) => {
   if (!post) return <ActivityIndicator />
