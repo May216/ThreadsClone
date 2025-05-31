@@ -1,10 +1,11 @@
 import { useLocalSearchParams } from "expo-router";
 import { PostForm } from "@/components/post/PostForm";
 import { useCreatePost } from "@/hooks";
+import { PostType } from "@/types/post";
 
 type NewPostParams = {
   parent_id: string;
-  post_type: string;
+  post_type: PostType;
   initial_medias: string[];
   initial_content: string;
 }
@@ -21,7 +22,7 @@ export default function NewPostScreen() {
   const handleSubmit = async (content: string, mediaUrls?: string[]) => {
     createPost({
       content,
-      postType: postType as 'post' | 'quote' | 'reply',
+      postType: postType as PostType,
       parentId,
       mediaUrls
     });
@@ -34,6 +35,7 @@ export default function NewPostScreen() {
       isSubmitting={isCreating}
       initialContent={initialContent}
       initialMedias={initialMedias}
+      postType={postType}
       submitButtonText="發佈"
       onSubmit={handleSubmit}
     />

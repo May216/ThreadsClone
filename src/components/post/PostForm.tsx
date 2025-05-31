@@ -9,6 +9,8 @@ import { useAuth } from "@/providers/AuthProvider";
 import { ImagePreview, QuotePost, SupabaseImage, VideoPreview, ConfirmModal } from "@/components";
 import { getPostById } from "@/services/posts";
 import { useMediaUpload } from "@/hooks";
+import { useDraftStore } from "@/stores/draftStore";
+import { PostType } from "@/types/post";
 
 const MAX_CHARACTERS = 200;
 
@@ -17,6 +19,7 @@ interface PostFormProps {
   initialContent?: string;
   parentId?: string;
   postId?: string;
+  postType?: PostType;
   initialMedias?: string[] | string;
   isSubmitting: boolean;
   error?: Error;
@@ -26,7 +29,9 @@ interface PostFormProps {
 
 export const PostForm = ({
   isEdit = false,
+  postId,
   parentId,
+  postType,
   initialContent = '',
   initialMedias,
   isSubmitting,
@@ -36,11 +41,13 @@ export const PostForm = ({
 }: PostFormProps) => {
   const navigation = useNavigation();
   const { profile } = useAuth();
+  const { addDraft } = useDraftStore();
+  const { medias, setMedias, pickMedia, removeMedia, uploadAllMedia, deleteRemovedMedias } = useMediaUpload();
+
   const [text, setText] = useState(initialContent);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const { medias, setMedias, pickMedia, removeMedia, uploadAllMedia, deleteRemovedMedias } = useMediaUpload();
   const [pendingAction, setPendingAction] = useState<any>(null);
-
+  
   const hasUnsavedChanges = text !== initialContent || medias.length > 0;
   const isDisabled = isSubmitting || (!text && medias.length === 0) || text.length > MAX_CHARACTERS;
   const characterCount = text.length;
@@ -84,6 +91,13 @@ export const PostForm = ({
 
   const handleSave = async () => {
     try {
+      addDraft({
+        content: text,
+        medias,
+        post_type: postType!,
+        parentId,
+        postId: isEdit ? postId : undefined,
+      });
       setIsModalVisible(false);
       if (pendingAction) {
         navigation.dispatch(pendingAction);

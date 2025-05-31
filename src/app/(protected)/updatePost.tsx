@@ -27,6 +27,7 @@ export default function EditPostScreen() {
       postId={postId}
       initialContent={post?.content}
       initialMedias={post?.medias}
+      postType={post?.post_type}
       isSubmitting={isEditing}
       submitButtonText="更新"
       onSubmit={handleSubmit}
