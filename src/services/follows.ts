@@ -1,23 +1,33 @@
 import { supabase } from "@/lib/supabase";
 
 export const getUserFollowers = async (userId: string) => {
-  const { data } = await supabase
-    .from('follows')
-    .select('*')
-    .eq('following_id', userId)
-    .throwOnError();
+  try {
+    const { data } = await supabase
+      .from('follows')
+      .select('*, profiles!follows_follower_id_fkey1(*)')
+      .eq('following_id', userId)
+      .throwOnError();
 
-  return data;
+    return data;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 }
 
 export const getUserFollowing = async (userId: string) => {
-  const { data } = await supabase
-    .from('follows')
-    .select('*')
-    .eq('follower_id', userId)
-    .throwOnError();
+  try {
+    const { data } = await supabase
+      .from('follows')
+      .select('*, profiles!follows_following_id_fkey1(*)')
+      .eq('follower_id', userId)
+      .throwOnError();
 
-  return data;
+    return data;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 }
 
 /**

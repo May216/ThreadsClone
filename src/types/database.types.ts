@@ -220,14 +220,14 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "follows_follower_id_fkey"
+            foreignKeyName: "follows_follower_id_fkey1"
             columns: ["follower_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "follows_following_id_fkey"
+            foreignKeyName: "follows_following_id_fkey1"
             columns: ["following_id"]
             isOneToOne: false
             referencedRelation: "profiles"

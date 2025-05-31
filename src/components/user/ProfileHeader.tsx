@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View, Text, ActivityIndicator, Pressable } from "react-native";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 
 import { ConfirmModal } from "../common"
 import { SupabaseImage } from "../media"
@@ -13,6 +13,7 @@ export const ProfileHeader = ({ userId }: { userId: string }) => {
   const { user } = useAuth()
   const { follow, unfollow, isFollowing } = useProfileActions(userId)
   const [isModalVisible, setIsModalVisible] = useState(false)
+  const isCurrentUser = userId === user?.id
 
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ['profile', userId],
@@ -42,6 +43,17 @@ export const ProfileHeader = ({ userId }: { userId: string }) => {
     setIsModalVisible(true)
   }
 
+  const handleFollowersPress = () => {
+    if (isCurrentUser) {
+      router.push('/(tabs)/myProfile/follows')
+    } else {
+      router.push({
+        pathname: '/profiles/follows',
+        params: { user_id: userId, username: profile?.username }
+      })
+    }
+  }
+
   return (
     <View className="p-4 gap-4">
       <View className="flex-row items-center justify-between gap-2">
@@ -63,10 +75,12 @@ export const ProfileHeader = ({ userId }: { userId: string }) => {
           {profile?.bio}
         </Text>
       )}
-      <Text className="text-neutral-600 text-lg leading-snug font-bold">
-        {profile?.followers_count} 粉絲
-      </Text>
-      {userId === user?.id ? (
+      <Pressable onPress={handleFollowersPress}>
+        <Text className="text-neutral-600 text-lg leading-snug font-bold">
+          {profile?.followers_count} 粉絲
+        </Text>
+      </Pressable>
+      {isCurrentUser ? (
         <View className="flex-row gap-2">
           <Link href="/myProfile/edit" asChild>
             <Pressable className="flex-1 py-2 rounded-xl border-2 border-neutral-800">

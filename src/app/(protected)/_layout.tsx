@@ -11,13 +11,8 @@ export default function ProtectedLayout() {
   return (
     <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen
-        name="profiles"
-        options={{
-          headerTitle: '',
-          headerBackButtonDisplayMode: 'minimal'
-        }}
-      />
+      <Stack.Screen name="profiles/index" options={{ title: '', headerBackButtonDisplayMode: 'minimal' }} />
+      <Stack.Screen name="profiles/follows" options={{ headerBackButtonDisplayMode: 'minimal' }} />
       <Stack.Screen
         name="newPost"
         options={{

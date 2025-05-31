@@ -126,10 +126,10 @@ export const usePostInteractions = (post: PostWithUser) => {
 
   const handleUserPress = () => {
     if (post.user.id === user?.id) {
-      router.push({ pathname: '/myProfile' })
+      router.push({ pathname: '/(tabs)/myProfile' })
     } else {
       router.push({
-        pathname: '/profiles/[id]',
+        pathname: '/profiles',
         params: {
           id: post.user.id,
           username: post.user.username
