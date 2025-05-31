@@ -22,16 +22,14 @@ export default function ProtectedLayout() {
         name="newPost"
         options={{
           title: '新串文',
-          presentation: 'modal',
-          animation: 'fade_from_bottom',
+          headerBackButtonDisplayMode: 'minimal',
         }}
       />
       <Stack.Screen
         name="updatePost"
         options={{
           title: '編輯串文',
-          presentation: 'modal',
-          animation: 'fade_from_bottom',
+          headerBackButtonDisplayMode: 'minimal',
         }}
       />
     </Stack>

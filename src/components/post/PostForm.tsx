@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Pressable, KeyboardAvoidingView, Platform, ActivityIndicator, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 import { Entypo } from "@expo/vector-icons";
+import { useNavigation, usePreventRemove } from '@react-navigation/native';
 
 import { useAuth } from "@/providers/AuthProvider";
-import { ImagePreview, QuotePost, SupabaseImage, VideoPreview } from "@/components";
+import { ImagePreview, QuotePost, SupabaseImage, VideoPreview, ConfirmModal } from "@/components";
 import { getPostById } from "@/services/posts";
 import { useMediaUpload } from "@/hooks";
 
@@ -33,13 +34,23 @@ export const PostForm = ({
   submitButtonText,
   onSubmit,
 }: PostFormProps) => {
+  const navigation = useNavigation();
   const { profile } = useAuth();
   const [text, setText] = useState(initialContent);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const { medias, setMedias, pickMedia, removeMedia, uploadAllMedia, deleteRemovedMedias } = useMediaUpload();
+  const [pendingAction, setPendingAction] = useState<any>(null);
+
+  const hasUnsavedChanges = text !== initialContent || medias.length > 0;
   const isDisabled = isSubmitting || (!text && medias.length === 0) || text.length > MAX_CHARACTERS;
   const characterCount = text.length;
   const isOverLimit = characterCount > MAX_CHARACTERS;
   const overLimitCount = isOverLimit ? characterCount - MAX_CHARACTERS : 0;
+
+  usePreventRemove(hasUnsavedChanges, ({ data }) => {
+    setPendingAction(data.action);
+    setIsModalVisible(true);
+  });
 
   useEffect(() => {
     if (initialContent) {
@@ -70,6 +81,28 @@ export const PostForm = ({
     queryFn: () => getPostById(parentId!),
     enabled: !!parentId
   });
+
+  const handleSave = async () => {
+    try {
+      setIsModalVisible(false);
+      if (pendingAction) {
+        navigation.dispatch(pendingAction);
+      }
+    } catch (error) {
+      console.error('Error saving draft:', error);
+    }
+  };
+
+  const handleDiscard = () => {
+    setIsModalVisible(false);
+    if (pendingAction) {
+      navigation.dispatch(pendingAction);
+    }
+  };
+
+  const handleContinue = () => {
+    setIsModalVisible(false);
+  };
 
   const handleSubmit = async () => {
     try {
@@ -171,6 +204,18 @@ export const PostForm = ({
           </Pressable>
         </View>
       </KeyboardAvoidingView>
+
+      <ConfirmModal
+        isVisible={isModalVisible}
+        title="儲存為草稿？"
+        message="儲存為草稿，以便稍後編輯和發佈。"
+        onSave={handleSave}
+        onDiscard={handleDiscard}
+        onContinue={handleContinue}
+        saveText="儲存"
+        discardText="不儲存"
+        continueText="繼續編輯"
+      />
     </SafeAreaView>
   );
 }; 
