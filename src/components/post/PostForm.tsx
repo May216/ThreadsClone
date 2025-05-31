@@ -124,6 +124,24 @@ export const PostForm = ({
     setIsModalVisible(false);
   };
 
+  const unsavedChangesOptions = [
+    {
+      text: '儲存',
+      textClassName: 'text-blue-500 font-bold',
+      onPress: handleSave,
+    },
+    {
+      text: '不儲存',
+      textClassName: 'text-red-500',
+      onPress: handleDiscard,
+    },
+    {
+      text: '繼續編輯',
+      textClassName: 'text-white font-bold',
+      onPress: handleContinue,
+    }
+  ]
+
   const handleSubmit = async () => {
     try {
       await deleteRemovedMedias();
@@ -229,12 +247,8 @@ export const PostForm = ({
         isVisible={isModalVisible}
         title="儲存為草稿？"
         message="儲存為草稿，以便稍後編輯和發佈。"
-        onSave={handleSave}
-        onDiscard={handleDiscard}
-        onContinue={handleContinue}
-        saveText="儲存"
-        discardText="不儲存"
-        continueText="繼續編輯"
+        options={unsavedChangesOptions}
+        onBackdropPress={() => setIsModalVisible(false)}
       />
     </SafeAreaView>
   );

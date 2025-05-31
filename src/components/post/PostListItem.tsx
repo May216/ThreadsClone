@@ -4,10 +4,10 @@ import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import FeatherIcon from "@expo/vector-icons/Feather"
 
-import { InteractionButton } from "../common"
+import { ConfirmModal, InteractionButton } from "../common"
 import { SupabaseImage } from "../media"
 import { PostMedia } from "./PostMedia"
-import { usePostInteractions } from "@/hooks"
+import { usePostActions, usePostInteractions } from "@/hooks"
 import { Tables } from "@/types/database.types"
 
 dayjs.extend(relativeTime)
@@ -21,6 +21,8 @@ type PostWithUser = Tables<'posts'> & {
 
 export const PostListItem = ({ post, isLastInGroup = true }: { post: PostWithUser, isLastInGroup?: boolean }) => {
   const {
+    isModalVisible,
+    setIsModalVisible,
     hasLiked,
     likeMutation,
     hasReposted,
@@ -30,6 +32,24 @@ export const PostListItem = ({ post, isLastInGroup = true }: { post: PostWithUse
     handleMore,
     handleUserPress
   } = usePostInteractions(post)
+  const { deletePost } = usePostActions(post)
+
+  const deleteOptions = [
+    {
+      text: '刪除',
+      textClassName: 'text-red-500',
+      onPress: () => {
+        deletePost()
+        setIsModalVisible(false)
+      }
+    },
+    {
+      text: '取消',
+      onPress: () => {
+        setIsModalVisible(false)
+      }
+    }
+  ]
 
   return (
     <Link href={`posts/${post.id}`} asChild>
@@ -104,6 +124,13 @@ export const PostListItem = ({ post, isLastInGroup = true }: { post: PostWithUse
             />
           </View>
         </View>
+        <ConfirmModal
+          isVisible={isModalVisible}
+          title="刪除貼文？"
+          message="如果刪除這則貼文，即無法復原。"
+          options={deleteOptions}
+          onBackdropPress={() => setIsModalVisible(false)}
+        />
       </Pressable>
     </Link>
   )

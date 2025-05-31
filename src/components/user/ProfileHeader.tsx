@@ -1,7 +1,9 @@
-import { View, Text, ActivityIndicator, Pressable, Alert } from "react-native";
+import { useState } from "react";
+import { View, Text, ActivityIndicator, Pressable } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "expo-router";
 
+import { ConfirmModal } from "../common"
 import { SupabaseImage } from "../media"
 import { getProfileById } from "@/services/profiles"
 import { useAuth } from "@/providers/AuthProvider";
@@ -10,6 +12,7 @@ import { useProfileActions } from "@/hooks";
 export const ProfileHeader = ({ userId }: { userId: string }) => {
   const { user } = useAuth()
   const { follow, unfollow, isFollowing } = useProfileActions(userId)
+  const [isModalVisible, setIsModalVisible] = useState(false)
 
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ['profile', userId],
@@ -20,11 +23,23 @@ export const ProfileHeader = ({ userId }: { userId: string }) => {
   if (isLoading) return <ActivityIndicator />
   if (error) return <Text className="text-white">Error: {error.message}</Text>
 
+  const unfollowOptions = [
+    {
+      text: '取消追蹤',
+      textClassName: 'text-red-500 font-bold',
+      onPress: () => {
+        unfollow()
+        setIsModalVisible(false)
+      }
+    },
+    {
+      text: '取消',
+      onPress: () => setIsModalVisible(false)
+    }
+  ]
+
   const handleUnFollow = () => {
-    Alert.alert('確認', '確認要取消追蹤嗎？', [
-      { text: '取消', style: 'cancel' },
-      { text: '確認', onPress: () => unfollow() }
-    ])
+    setIsModalVisible(true)
   }
 
   return (
@@ -78,6 +93,13 @@ export const ProfileHeader = ({ userId }: { userId: string }) => {
           </Pressable>
         </View>
       )}
+      <ConfirmModal
+        isVisible={isModalVisible}
+        avatar={profile?.avatar_url}
+        message={`取消追蹤${profile?.username}？`}
+        options={unfollowOptions}
+        onBackdropPress={() => setIsModalVisible(false)}
+      />
     </View>
   )
 }

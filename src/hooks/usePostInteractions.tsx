@@ -1,9 +1,8 @@
-import { Alert } from "react-native"
+import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { router } from "expo-router"
 import { Ionicons, Feather } from '@expo/vector-icons';
 
-import { usePostActions } from "./usePostActions"
 import { useAuth } from "@/providers/AuthProvider"
 import { toggleLike, getUserLikeStatus, getUserRepostsStatus, toggleRepost } from "@/services/interactions"
 import { useBottomSheet } from "@/providers/BottomSheetProvider"
@@ -20,7 +19,7 @@ export const usePostInteractions = (post: PostWithUser) => {
   const queryClient = useQueryClient()
   const { user } = useAuth()
   const { open: openBottomSheet } = useBottomSheet()
-  const { deletePost } = usePostActions(post)
+  const [isModalVisible, setIsModalVisible] = useState(false)
 
   const postId = post.id
   const userId = user?.id
@@ -109,14 +108,7 @@ export const usePostInteractions = (post: PostWithUser) => {
               params: { post_id: post.id }
             })
           } else if (key === 'delete') {
-            Alert.alert(
-              '確認刪除',
-              '確定要刪除這則貼文嗎？',
-              [
-                { text: '取消', style: 'cancel' },
-                { text: '確定', style: 'destructive', onPress: () => deletePost() }
-              ]
-            )
+            setIsModalVisible(true)
           }
         }
       })
@@ -154,6 +146,8 @@ export const usePostInteractions = (post: PostWithUser) => {
   }
 
   return {
+    isModalVisible,
+    setIsModalVisible,
     hasLiked,
     likeMutation,
     hasReposted,
