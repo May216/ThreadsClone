@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 import { Entypo } from "@expo/vector-icons";
 import { useNavigation, usePreventRemove } from '@react-navigation/native';
+import { ImagePickerAsset } from "expo-image-picker";
 
 import { useAuth } from "@/providers/AuthProvider";
 import { ImagePreview, QuotePost, SupabaseImage, VideoPreview, ConfirmModal } from "@/components";
@@ -47,8 +48,8 @@ export const PostForm = ({
   const [text, setText] = useState(initialContent);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [pendingAction, setPendingAction] = useState<any>(null);
-  
-  const hasUnsavedChanges = text !== initialContent || medias.length > 0;
+
+  const hasUnsavedChanges = !isSubmitting && (text !== initialContent || medias.length > 0);
   const isDisabled = isSubmitting || (!text && medias.length === 0) || text.length > MAX_CHARACTERS;
   const characterCount = text.length;
   const isOverLimit = characterCount > MAX_CHARACTERS;
@@ -69,17 +70,22 @@ export const PostForm = ({
     if (initialMedias) {
       const initialMediaAssets = typeof initialMedias === 'string'
         ? JSON.parse(initialMedias)
-        : initialMedias.map(filename => {
-          const url = `${process.env.EXPO_PUBLIC_SUPABASE_URL}/storage/v1/object/public/media/${filename}`;
+        : initialMedias;
+      const formattedMediaAssets = initialMediaAssets.map((item: string | ImagePickerAsset) => {
+        if (typeof item === 'string') {
+          const url = `${process.env.EXPO_PUBLIC_SUPABASE_URL}/storage/v1/object/public/media/${item}`;
           return {
             uri: url,
-            type: filename.match(/\.(jpg|jpeg|png|gif)$/i) ? 'image' as const : 'video' as const,
-            mimeType: filename.match(/\.(jpg|jpeg|png|gif)$/i) ? 'image/jpeg' : 'video/mp4',
+            type: item.match(/\.(jpg|jpeg|png|gif)$/i) ? 'image' as const : 'video' as const,
+            mimeType: item.match(/\.(jpg|jpeg|png|gif)$/i) ? 'image/jpeg' : 'video/mp4',
             width: 0,
             height: 0,
           };
-        });
-      setMedias(initialMediaAssets);
+        } else {
+          return item;
+        }
+      });
+      setMedias(formattedMediaAssets);
     }
   }, [initialMedias]);
 

@@ -2,18 +2,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ImagePickerAsset } from 'expo-image-picker';
-import { PostType } from '@/types/post';
-
-interface Draft {
-  id: string;
-  content: string;
-  medias: ImagePickerAsset[];
-  post_type: PostType;
-  parentId?: string;
-  postId?: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { PostType, Draft } from '@/types/post';
 
 interface DraftStore {
   drafts: Draft[];

@@ -32,6 +32,13 @@ export default function ProtectedLayout() {
           headerBackButtonDisplayMode: 'minimal',
         }}
       />
+      <Stack.Screen
+        name="draft"
+        options={{
+          title: '草稿',
+          headerBackButtonDisplayMode: 'minimal',
+        }}
+      />
     </Stack>
   )
 }
